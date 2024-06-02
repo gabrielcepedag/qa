@@ -3,7 +3,7 @@ package org.example.model;
 import org.example.exceptions.NonNegativePrice;
 
 public class Product {
-    private static int staticID;
+    private static int staticID = 1;
     private int id;
     private String code;
     private String name;
@@ -13,7 +13,9 @@ public class Product {
         if (price < 0){
             throw new NonNegativePrice();
         }
-        this.id = ++Product.staticID;
+        System.out.println("ID: "+Product.staticID);
+        this.id = Product.staticID++;
+//        Product.staticID += 1;
         this.code = code;
         this.name = name;
         this.price = price;

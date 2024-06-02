@@ -7,11 +7,14 @@ import org.example.model.Product;
 import org.example.service.MainServices;
 import org.junit.Test;
 import junit.framework.TestCase;
+import org.junit.jupiter.api.Order;
 
 import static org.junit.Assert.assertThrows;
 
 public class TestProduct extends TestCase{
 
+    //Este test dado que Junit no corre los tests en orden de arriba hacia abajo
+    //Debe de correrse solo para comprobar su validez.
     public void testCreateProductId(){
         Product p1 = new Product("as", "sa", 900);
         Product p2 = new Product("asa", "sas", 910);
