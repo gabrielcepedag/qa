@@ -53,8 +53,8 @@ public class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Login", LoginView.class, LineAwesomeIcon.USER.create()));
-        nav.addItem(new SideNavItem("Contact Form", ContactFormView.class, LineAwesomeIcon.USER.create()));
-        nav.addItem(new SideNavItem("Product List", ProductListView.class, LineAwesomeIcon.PRODUCT_HUNT.create()));
+        nav.addItem(new SideNavItem("Contact Form", ContactFormView.class, LineAwesomeIcon.PHONE_SOLID.create()));
+        nav.addItem(new SideNavItem("Product List", ProductListView.class, LineAwesomeIcon.LIST_ALT.create()));
 
         return nav;
     }

@@ -1,5 +1,6 @@
 package com.example.application.views.product;
 
+import com.example.application.views.MainLayout;
 import com.example.application.views.model.Product;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PageTitle("Product List")
-@Route(value = "products")
+@Route(value = "products", layout = MainLayout.class)
 public class ProductListView extends Composite<VerticalLayout> {
 
     public ProductListView() {
@@ -25,8 +26,8 @@ public class ProductListView extends Composite<VerticalLayout> {
         grid.addColumn(Product::getId).setHeader("ID");
         grid.addColumn(Product::getName).setHeader("Name");
         grid.addColumn(Product::getPrice).setHeader("Price");
-        grid.addComponentColumn(product -> createAvailableIcon(product.getQuantity()))
-        .setHeader("Available");
+        grid.addColumn(Product::getQuantity).setHeader("Quantity");
+        grid.addComponentColumn(product -> createAvailableIcon(product.getQuantity())).setHeader("Available");
 
         List<Product> products = new ArrayList<>();
         products.add(new Product(1, "Arroz", 200, 10));
@@ -54,9 +55,7 @@ public class ProductListView extends Composite<VerticalLayout> {
         });
 
         button.addClickListener(event -> {
-            if (grid.getSelectedItems().isEmpty()){
-                Notification.show("No hay seleccionado ningun producto", 3000, Notification.Position.BOTTOM_END);
-            }else{
+            if (!grid.getSelectedItems().isEmpty()){
                 Notification.show("Producto solicitado exitosamente", 3000, Notification.Position.BOTTOM_END);
             }
         });
