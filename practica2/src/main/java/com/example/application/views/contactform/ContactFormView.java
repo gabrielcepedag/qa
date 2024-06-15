@@ -82,12 +82,6 @@ public class ContactFormView extends Composite<VerticalLayout> {
         layoutColumn2.add(layoutRow2);
         layoutRow2.add(buttonPrimary);
 
-//        Paragraph resultMessage = new Paragraph();
-//        resultMessage.setId("msg");
-//        resultMessage.setClassName("result-message");
-//        resultMessage.setVisible(false);
-//        getContent().add(resultMessage);
-
         binder.forField(emailField)
                 .withValidator(new EmailValidator("Por favor, ingrese un correo electrónico válido"))
                 .asRequired("Por favor, ingresa un correo electronico")
@@ -107,7 +101,6 @@ public class ContactFormView extends Composite<VerticalLayout> {
 
             try {
                 binder.writeBean(contactFormModel);
-//                resultMessage.setText("Nombre: " + contactFormModel.getName() + " Email: " + contactFormModel.getEmail() + " Mensaje: " + contactFormModel.getMessage());
                 Notification.show("Formulario enviado con éxito", 3000, Notification.Position.MIDDLE);
             } catch (ValidationException exp) {
                 Notification.show("Por favor, complete todos los campos correctamente", 3000, Notification.Position.MIDDLE);

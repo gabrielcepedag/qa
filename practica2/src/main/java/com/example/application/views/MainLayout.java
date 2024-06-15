@@ -2,6 +2,7 @@ package com.example.application.views;
 
 import com.example.application.views.contactform.ContactFormView;
 import com.example.application.views.login.LoginView;
+import com.example.application.views.product.ProductListView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;
@@ -53,6 +54,7 @@ public class MainLayout extends AppLayout {
 
         nav.addItem(new SideNavItem("Login", LoginView.class, LineAwesomeIcon.USER.create()));
         nav.addItem(new SideNavItem("Contact Form", ContactFormView.class, LineAwesomeIcon.USER.create()));
+        nav.addItem(new SideNavItem("Product List", ProductListView.class, LineAwesomeIcon.PRODUCT_HUNT.create()));
 
         return nav;
     }

@@ -43,10 +43,10 @@ class ContactFormTest extends PlaywrightIT{
 
     @Test
     public void inputs_are_visible(){
-        assertThat(page.locator("input[id^='input-vaadin-text-field']")).isVisible();
-        assertThat(page.locator("input[id^='input-vaadin-email-field']")).isVisible();
-        assertThat(page.locator("textarea[id^='textarea-vaadin-text-area']")).isVisible();
-        assertThat(page.locator("vaadin-button:has-text('Enviar')")).isVisible();
+        assertThat(name).isVisible();
+        assertThat(email).isVisible();
+        assertThat(button).isVisible();
+        assertThat(message).isVisible();
     }
 
     @Test
