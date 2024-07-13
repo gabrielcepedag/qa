@@ -20,6 +20,8 @@ import java.util.List;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 
+//TODO: Hacer test para los roles
+
 @DataJpaTest
 public class ProductTest {
     private ProductService productService;
