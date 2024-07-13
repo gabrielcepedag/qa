@@ -19,6 +19,26 @@ public class BadRequestException extends RuntimeException {
         setApiResponse(message, cause);
     }
 
+    public BadRequestException(String message) {
+        super(message);
+        setApiResponse(message);
+    }
+
+    public BadRequestException(String message, String extra) {
+        super(message);
+        setApiResponse(message, extra);
+    }
+
+    private void setApiResponse(String message, String extra) {
+        System.out.println("setApiResponse en BadRequestException\n");
+        apiResponse = custResponseBuilder.buildResponse(HttpStatus.BAD_REQUEST.value(), message, extra);
+    }
+
+    private void setApiResponse(String message) {
+        System.out.println("setApiResponse en BadRequestException\n");
+        apiResponse = custResponseBuilder.buildResponse(HttpStatus.BAD_REQUEST.value(), message);
+    }
+
     private void setApiResponse(String message, Throwable cause) {
         System.out.println("setApiResponse en BadRequestException\n");
         apiResponse = custResponseBuilder.buildResponse(HttpStatus.BAD_REQUEST.value(), message, cause.getCause().getMessage());
