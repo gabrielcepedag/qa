@@ -15,4 +15,5 @@ public class UserResponse {
     private String username;
     private boolean deleted;
     private ERole role;
+    private String accessToken;
 }
