@@ -10,13 +10,14 @@ import org.example.proyectofinal.utils.response.CustResponseBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-@RestController
-@RequestMapping("api/v1/products")
+@Controller
 public class ProductController {
     private final ProductService productService;
     private ModelMapper modelMapper;
@@ -29,8 +30,10 @@ public class ProductController {
         this.custResponseBuilder = custResponseBuilder;
     }
 
+    //===================================== API =========================================
+
     //TODO: Hacer con filtros de busqueda
-    @GetMapping
+    @GetMapping("api/v1/products")
     private ResponseEntity<?> getAllProducts() {
         List<Product> products = productService.findAllProducts();
 //      List<Product> productsResponse = Arrays.asList(modelMapper.map(products, CompanyResponse[].class));
@@ -39,7 +42,7 @@ public class ProductController {
         return response;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("api/v1/products/{id}")
     private ResponseEntity<?> getProductById(@PathVariable Long id) {
         Product product = productService.findOneById(id);
 //        CompanyResponse companyResponse = modelMapper.map(company, CompanyResponse.class);
@@ -48,7 +51,7 @@ public class ProductController {
         return response;
     }
 
-    @PostMapping
+    @PostMapping("api/v1/products")
     private ResponseEntity<?> addProduct(@Valid @RequestBody ProductRequest productRequest) {
         Product product = productService.createProduct(productRequest);
 //        CompanyResponse companyResponse = modelMapper.map(company, CompanyResponse.class);
@@ -57,7 +60,7 @@ public class ProductController {
         return response;
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("api/v1/products/{id}")
     private ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         Boolean bool = productService.deleteProductById(id);
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), bool);
@@ -65,7 +68,7 @@ public class ProductController {
         return response;
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("api/v1/products/{id}")
     private ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequest productRequest) {
         Product product = productService.updateProduct(id, productRequest);
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
@@ -73,4 +76,12 @@ public class ProductController {
         return response;
     }
 
+    //=================== VIEWS ==========================
+    @GetMapping("/products")
+    public String manageProductsPage(Model model){
+        List<Product> products = productService.findAllProducts();
+
+        model.addAttribute("productList", products);
+        return "manageProducts";
+    }
 }
