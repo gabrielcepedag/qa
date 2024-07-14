@@ -113,9 +113,9 @@
                                         <td th:text="${user.id}"></td>
                                         <td th:text="${user.username}"></td>
                                         <td th:text="${user.name}"></td>
-                                        <td th:text="${#strings.capitalize(user.role.getValue().split('_')[1].toLowerCase())}"></td>
+                                        <td th:text="${#strings.capitalize(user.role.getValue().toLowerCase())}"></td>
                                         <td>
-                                            <a href="#" id="btnEdit" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue().split('_')[1]}" class="text-info edit-btn">
+                                            <a href="#" id="btnEdit" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue()}" class="text-info edit-btn">
                                                 <i class="fs-5 bi bi-pencil-square" title="Edit Information"></i>
                                             </a>
                                             <a href="#" id="btnDelete" th:attr="data-id=${user.id}" class="text-danger delete-btn ms-3">

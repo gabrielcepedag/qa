@@ -85,26 +85,29 @@
                 return;
             }
 
-            const user = {
-                username: username,
-                name: name,
-                password: password
-            };
-            $.ajax({
-                url: signupUrl,
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(user),
-                success: function() {
-                    window.location.href = homeUrl;
-                },
-                error: function(xhr, status, error) {
-                    signupBtnText.removeClass('d-none');
-                    signupBtnSpinner.addClass('d-none');
-                    signupBtn.prop('disabled', false);
-                    Swal.fire('Signup Failed', 'An error occurred during signup. Please try again.', 'error');
-                }
-            });
+
+            window.location.href = homeUrl;
+
+            // const user = {
+            //     username: username,
+            //     name: name,
+            //     password: password
+            // };
+            // $.ajax({
+            //     url: signupUrl,
+            //     type: 'POST',
+            //     contentType: 'application/json',
+            //     data: JSON.stringify(user),
+            //     success: function() {
+            //         window.location.href = homeUrl;
+            //     },
+            //     error: function(xhr, status, error) {
+            //         signupBtnText.removeClass('d-none');
+            //         signupBtnSpinner.addClass('d-none');
+            //         signupBtn.prop('disabled', false);
+            //         Swal.fire('Signup Failed', 'An error occurred during signup. Please try again.', 'error');
+            //     }
+            // });
         });
     });
 </script>
