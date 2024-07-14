@@ -52,7 +52,7 @@ public class ProductController {
         return response;
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE')") //El metodo debe ser public
+    @PreAuthorize("hasAnyAuthority('ADMIN')") //El metodo debe ser public
     @PostMapping("api/v1/products")
     public ResponseEntity<?> addProduct(@Valid @RequestBody ProductRequest productRequest) {
         Product product = productService.createProduct(productRequest);
@@ -62,7 +62,7 @@ public class ProductController {
         return response;
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE')") //El metodo debe ser public
+    @PreAuthorize("hasAnyAuthority('ADMIN')") //El metodo debe ser public
     @DeleteMapping("api/v1/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         Boolean bool = productService.deleteProductById(id);
@@ -71,7 +71,7 @@ public class ProductController {
         return response;
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping("api/v1/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequest productRequest) {
         Product product = productService.updateProduct(id, productRequest);
