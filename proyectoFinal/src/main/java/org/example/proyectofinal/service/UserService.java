@@ -8,6 +8,9 @@ import org.example.proyectofinal.exception.BadRequestException;
 import org.example.proyectofinal.exception.ResourceNotFoundException;
 import org.example.proyectofinal.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +48,8 @@ public class UserService {
     public User createUser(UserRequest userRequest) {
         //TODO: Validar roles
         try {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            userRequest.setPassword(encoder.encode(userRequest.getPassword()));
             User user = new User();
             user.setId(null);
             modelMapper.map(userRequest, user);

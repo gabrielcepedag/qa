@@ -23,6 +23,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        System.out.println("Entro al filtro con el request a: "+request.getRequestURI());
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
@@ -33,13 +36,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            System.out.println("La autenticación no existe... Voy a crearla");
             UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
             if(jwtService.validateToken(token, userDetails)){
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                System.out.println("Agregué la autenticación al contexto");
             }
-
         }
 
         filterChain.doFilter(request, response);
