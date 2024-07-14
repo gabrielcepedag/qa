@@ -1,5 +1,6 @@
 package org.example.proyectofinal.service;
 
+import org.example.proyectofinal.cons.ERole;
 import org.example.proyectofinal.dto.request.UserRequest;
 import org.example.proyectofinal.entity.Product;
 import org.example.proyectofinal.entity.User;
@@ -29,13 +30,13 @@ public class UserService {
         return user;
     }
 
-    public User findOneByUsername(String username) {
-        User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null || user.isDeleted()) {
-            throw new ResourceNotFoundException(User.class.getSimpleName(), "USERNAME", username);
-        }
-        return user;
-    }
+//    public User findOneByUsername(String username) {
+//        User user = userRepository.findByUsername(username).orElse(null);
+//        if (user == null || user.isDeleted()) {
+//            throw new ResourceNotFoundException(User.class.getSimpleName(), "USERNAME", username);
+//        }
+//        return user;
+//    }
 
     public List<User> findAllUsers() {
         return userRepository.findAllByDeletedIsFalse();
@@ -47,6 +48,9 @@ public class UserService {
             User user = new User();
             user.setId(null);
             modelMapper.map(userRequest, user);
+            if (userRequest.getRole() != null) {
+                user.setRole(ERole.valueOf(userRequest.getRole()));
+            }
             return userRepository.save(user);
         }catch (Exception e){
             throw new BadRequestException(e.getMessage());
@@ -64,6 +68,11 @@ public class UserService {
         User user = findOneById(id);
         modelMapper.map(userRequest, user);
         user.setId(id);
+
+        if (userRequest.getRole() != null) {
+            user.setRole(ERole.valueOf(userRequest.getRole()));
+        }
+
         try {
             return userRepository.save(user);
         }catch (Exception e){
