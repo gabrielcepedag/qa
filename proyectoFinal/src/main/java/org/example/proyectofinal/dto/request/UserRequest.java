@@ -18,6 +18,6 @@ public class UserRequest {
     private String username;
     @NotBlank
     private String password;
-    @Pattern(regexp = "^(ADMIN|USER|EMPLOYEE)$", message = "Category must be one of: ADMIN, USER, EMPLOYEE")
+    @Pattern(regexp = "^(ADMIN|USER|EMPLOYEE)$", message = "Role must be one of: ADMIN, USER, EMPLOYEE")
     private String role;
 }
