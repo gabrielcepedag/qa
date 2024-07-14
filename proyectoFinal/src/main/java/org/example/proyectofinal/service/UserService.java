@@ -30,13 +30,13 @@ public class UserService {
         return user;
     }
 
-    public User findOneByUsername(String username) {
-        User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null || user.isDeleted()) {
-            throw new ResourceNotFoundException(User.class.getSimpleName(), "USERNAME", username);
-        }
-        return user;
-    }
+//    public User findOneByUsername(String username) {
+//        User user = userRepository.findByUsername(username).orElse(null);
+//        if (user == null || user.isDeleted()) {
+//            throw new ResourceNotFoundException(User.class.getSimpleName(), "USERNAME", username);
+//        }
+//        return user;
+//    }
 
     public List<User> findAllUsers() {
         return userRepository.findAllByDeletedIsFalse();
