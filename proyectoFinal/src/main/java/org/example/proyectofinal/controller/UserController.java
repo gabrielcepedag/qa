@@ -3,6 +3,7 @@ package org.example.proyectofinal.controller;
 import jakarta.validation.Valid;
 import org.example.proyectofinal.dto.request.UserRequest;
 import org.example.proyectofinal.dto.response.UserResponse;
+import org.example.proyectofinal.entity.Product;
 import org.example.proyectofinal.entity.User;
 import org.example.proyectofinal.service.UserService;
 import org.example.proyectofinal.utils.response.ApiResponse;
@@ -10,12 +11,14 @@ import org.example.proyectofinal.utils.response.CustResponseBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping
 public class UserController {
     private final UserService userService;
@@ -27,6 +30,8 @@ public class UserController {
         this.modelMapper = modelMapper;
         this.custResponseBuilder = custResponseBuilder;
     }
+
+    //===================================== API =========================================
 
     @GetMapping("/api/v1/users")
     private ResponseEntity<?> getAllUsers() {
@@ -71,4 +76,15 @@ public class UserController {
 
         return response;
     }
+
+    //===================================== VIEW =========================================
+
+    @GetMapping("/users")
+    public String manageUsersPage(Model model){
+        List<User> users = userService.findAllUsers();
+
+        model.addAttribute("userList", users);
+        return "manageUsers";
+    }
+
 }

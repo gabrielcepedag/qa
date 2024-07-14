@@ -30,7 +30,7 @@ public class ProductController {
         this.custResponseBuilder = custResponseBuilder;
     }
 
-    //=================== API ==========================
+    //===================================== API =========================================
 
     //TODO: Hacer con filtros de busqueda
     @GetMapping("api/v1/products")
