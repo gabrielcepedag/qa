@@ -11,6 +11,7 @@ import org.example.proyectofinal.utils.response.CustResponseBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +61,7 @@ public class UserController {
         return response;
     }
 
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')") esto da error de dependencia
     @DeleteMapping("/api/v1/users/{id}")
     private ResponseEntity<?> deleteUser(@PathVariable Long id) {
         Boolean bool = userService.deleteUserById(id);
