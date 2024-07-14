@@ -43,7 +43,7 @@ public class ProductService {
             modelMapper.map(productRequest, product);
             return productRepository.save(product);
         }catch (Exception e){
-            throw new BadRequestException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage());
         }
     }
 

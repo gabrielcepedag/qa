@@ -1,6 +1,7 @@
 package org.example.proyectofinal.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,12 +21,16 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
+    @NotBlank
     private String name;
     @Column(nullable = false)
+    @NotBlank
     private String username;
     @Column(nullable = false)
+    @NotBlank
     private String password;
-    private String phone;
+    @Column(columnDefinition = "boolean default false")
+    private boolean deleted;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ERole role;
