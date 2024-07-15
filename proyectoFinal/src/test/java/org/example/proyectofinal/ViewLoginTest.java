@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LoginViewTest {
+public class ViewLoginTest {
     private Playwright playwright;
     private Browser browser;
     private BrowserContext context;
@@ -73,7 +73,6 @@ public class LoginViewTest {
 
         // Se identifica la alerta esperada
         Locator alertMessage = page.locator("#swal2-title");
-        System.out.println(alertMessage.innerText());
 
         // Se prueba que la alerta se haya desplegado y contenga el mensaje adecuando
         assertEquals("Wrong Credentials", alertMessage.innerText());
