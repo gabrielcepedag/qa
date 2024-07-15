@@ -21,17 +21,6 @@ public class ViewHomeTest {
         context = browser.newContext();
         page = browser.newPage();
 
-    }
-
-    @AfterEach
-    public void tearDown() {
-        context.close();
-        browser.close();
-        playwright.close();
-    }
-
-    @Test
-    public void testManageRedirectProducts() {
         // Una vez creada la pestaña de Playwright, se dirige al Login
         page.navigate("http://localhost:8080/login");
 
@@ -48,7 +37,17 @@ public class ViewHomeTest {
 
         // Se define la espera de redireccion
         page.waitForURL("http://localhost:8080/home");
+    }
 
+    @AfterEach
+    public void tearDown() {
+        context.close();
+        browser.close();
+        playwright.close();
+    }
+
+    @Test
+    public void testManageRedirectProducts() {
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());
 
@@ -67,23 +66,6 @@ public class ViewHomeTest {
 
     @Test
     public void testManageRedirectStock() {
-        // Una vez creada la pestaña de Playwright, se dirige al Login
-        page.navigate("http://localhost:8080/login");
-
-        // Se definen los campos de Login
-        page.waitForSelector("#username");
-        page.waitForSelector("#password");
-
-        // Se ingresa credenciales validas en los campos
-        page.fill("#username", "playwrightLoginTest1");
-        page.fill("#password", "12345");
-
-        // Se selecciona boton de login
-        page.click("#loginBtn");
-
-        // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/home");
-
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());
 
@@ -102,23 +84,6 @@ public class ViewHomeTest {
 
     @Test
     public void testManageRedirectUsers() {
-        // Una vez creada la pestaña de Playwright, se dirige al Login
-        page.navigate("http://localhost:8080/login");
-
-        // Se definen los campos de Login
-        page.waitForSelector("#username");
-        page.waitForSelector("#password");
-
-        // Se ingresa credenciales validas en los campos
-        page.fill("#username", "playwrightLoginTest1");
-        page.fill("#password", "12345");
-
-        // Se selecciona boton de login
-        page.click("#loginBtn");
-
-        // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/home");
-
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());
 
@@ -137,23 +102,6 @@ public class ViewHomeTest {
 
     @Test
     public void testLogOutRedirect() {
-        // Una vez creada la pestaña de Playwright, se dirige al Login
-        page.navigate("http://localhost:8080/login");
-
-        // Se definen los campos de Login
-        page.waitForSelector("#username");
-        page.waitForSelector("#password");
-
-        // Se ingresa credenciales validas en los campos
-        page.fill("#username", "playwrightLoginTest1");
-        page.fill("#password", "12345");
-
-        // Se selecciona boton de login
-        page.click("#loginBtn");
-
-        // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/home");
-
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ViewProductsTest {
     private Playwright playwright;
@@ -20,6 +21,23 @@ public class ViewProductsTest {
         context = browser.newContext();
         page = browser.newPage();
 
+        // Una vez creada la pestaña de Playwright, se dirige al Login
+        page.navigate("http://localhost:8080/login");
+
+        // Se definen los campos de Login
+        page.waitForSelector("#username");
+        page.waitForSelector("#password");
+
+        // Se ingresa credenciales validas en los campos
+        page.fill("#username", "admin");
+        page.fill("#password", "admin");
+
+        // Se selecciona boton de login
+        page.click("#loginBtn");
+
+        // Se define la espera de redireccion
+        page.waitForURL("http://localhost:8080/home");
+
     }
 
     @AfterEach
@@ -31,23 +49,6 @@ public class ViewProductsTest {
 
     @Test
     public void testLogOutRedirect() {
-        // Una vez creada la pestaña de Playwright, se dirige al Login
-        page.navigate("http://localhost:8080/login");
-
-        // Se definen los campos de Login
-        page.waitForSelector("#username");
-        page.waitForSelector("#password");
-
-        // Se ingresa credenciales validas en los campos
-        page.fill("#username", "playwrightLoginTest1");
-        page.fill("#password", "12345");
-
-        // Se selecciona boton de login
-        page.click("#loginBtn");
-
-        // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/home");
-
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());
 
@@ -86,45 +87,88 @@ public class ViewProductsTest {
         page.close();
     }
 
-//    @Test
-//    public void testSubmitSuccessful() {
-//        // Una vez creada la pestaña de Playwright, se dirige a la vista de gestion de usuarios
-//        page.navigate("http://localhost:8080/contact");
-//
-//        // Obtener el número de entradas mostrado textualmente
-//        Locator hintTextDiv = page.locator(".text-light span");
-//        String formCountBefore = hintTextDiv.innerText();
-//
-//        // Se definen los campos de Login
-//        page.waitForSelector("#name");
-//        page.waitForSelector("#email");
-//        page.waitForSelector("#message");
-//
-//        // Se ingresa credenciales validas en los campos
-//        page.fill("#name", "Eduardo Martinez");
-//        page.fill("#email", "eemr0001@ce.pucmm.edu.do");
-//        page.fill("#message", "Hola Mundo!");
-//
-//        // Se selecciona boton de login
-//        page.click("#submitBtn");
-//
-//        // Se identifica la alerta esperada
-//        Locator alertMessage = page.locator("#swal2-title");
-//        // Se prueba que la alerta se haya desplegado y contenga el mensaje adecuando
-//        assertEquals("Submission Registered!", alertMessage.innerText());
-//        // Se cierra la alerta
-//        page.locator(".swal2-confirm").click();
-//
-//        // Se define la espera de redireccion
-//        page.waitForURL("http://localhost:8080/contact");
-//
-//        // Obteniendo nuevo valor de cantidad de registros
-//        String formCountAfter = hintTextDiv.innerText();
-//
-//        // Se prueba que se haya completado el redireccionamiento al validar la URL
-//        assertEquals(Integer.parseInt(formCountBefore)+1, Integer.parseInt(formCountAfter));
-//
-//        // Se cierra la pestaña de Playwright
-//        page.close();
-//    }
+    @Test
+    public void testAddProductSuccessful(){
+        // Se prueba que se haya completado el login al validar la URL de redireccion
+        assertEquals("http://localhost:8080/home", page.url());
+
+        // Se selecciona boton de productos
+        page.click("#btn-products");
+
+        // Se define la espera de redireccion
+        page.waitForURL("http://localhost:8080/products");
+
+        // Se prueba que se haya completado la redireccion al validar la URL
+        assertEquals("http://localhost:8080/products", page.url());
+
+        // Se selecciona el botón de logout
+        page.click("#btn-add-product");
+
+        // Se identifica el modal para agregar el producto
+        page.waitForSelector("#addProductModal");
+
+        // Completamos los campos con un producto valido
+        page.fill("#name", "Playwright Product");
+        page.fill("#description", "This is a test product created from Playwright.");
+        page.fill("#price", "100.00");
+        page.selectOption("#category", "FOOD");
+
+        // Se selecciona el botón de confirmar registro
+        page.click("#btnSubmit");
+
+        // Se identifica la alerta de registro exitoso
+        page.waitForSelector(".swal2-popup .swal2-title");
+        Locator successAlert = page.locator(".swal2-popup .swal2-title");
+
+        // Se valida el mensaje de registro exitoso
+        assertEquals("New Product Added!", successAlert.innerText());
+
+        // Se cierra la alerta
+        page.click(".swal2-confirm");
+        page.close();
+    }
+
+    @Test
+    public void testAddProductEmptyFields(){
+        // Se prueba que se haya completado el login al validar la URL de redireccion
+        assertEquals("http://localhost:8080/home", page.url());
+
+        // Se selecciona boton de productos
+        page.click("#btn-products");
+
+        // Se define la espera de redireccion
+        page.waitForURL("http://localhost:8080/products");
+
+        // Se prueba que se haya completado la redireccion al validar la URL
+        assertEquals("http://localhost:8080/products", page.url());
+
+        // Se selecciona el botón de logout
+        page.click("#btn-add-product");
+
+        // Se identifica el modal para agregar el producto
+        page.waitForSelector("#addProductModal");
+
+        // Se selecciona el botón de confirmar registro
+        page.click("#btnSubmit");
+
+        // Se definen los identificadores de los mensajes de error
+        Locator nameInvalidFeedback = page.locator("#name ~ .invalid-feedback");
+        Locator descriptionlInvalidFeedback = page.locator("#description ~ .invalid-feedback");
+        Locator priceInvalidFeedback = page.locator("#price ~ .invalid-feedback");
+        Locator categoryInvalidFeedback = page.locator("#category ~ .invalid-feedback");
+
+        // Se valida que los mensajes de entrada invalida son desplegados
+        assertTrue(nameInvalidFeedback.isVisible());
+        assertTrue(descriptionlInvalidFeedback.isVisible());
+        assertTrue(priceInvalidFeedback.isVisible());
+        assertTrue(categoryInvalidFeedback.isVisible());
+
+        // Se valida el contenido de los mensajes invalidos
+        assertEquals("This field cannot be empty!", nameInvalidFeedback.innerText());
+        assertEquals("This field cannot be empty!", descriptionlInvalidFeedback.innerText());
+        assertEquals("This field is empty or invalid!", priceInvalidFeedback.innerText());
+        assertEquals("Please select a category!", categoryInvalidFeedback.innerText());
+
+        page.close();
+    }
 }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ViewUsersTest {
+public class ViewStockTest {
     private Playwright playwright;
     private Browser browser;
     private BrowserContext context;
@@ -51,13 +51,13 @@ public class ViewUsersTest {
         assertEquals("http://localhost:8080/home", page.url());
 
         // Se selecciona boton de productos
-        page.click("#btn-users");
+        page.click("#btn-stock");
 
         // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/users");
+        page.waitForURL("http://localhost:8080/stock");
 
         // Se prueba que se haya completado la redireccion al validar la URL
-        assertEquals("http://localhost:8080/users", page.url());
+        assertEquals("http://localhost:8080/stock", page.url());
 
         // Se selecciona boton de Dropdown de Usuario
         page.click("#dropdownUser1");
