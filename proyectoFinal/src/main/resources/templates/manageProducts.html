@@ -39,7 +39,7 @@
                             <i class="fs-4 bi-boxes"></i> <span class="ms-1 d-none d-sm-inline">Stock</span> </a>
                         <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                             <li class="w-100">
-                                <a href="#" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Manage Stock</span></a>
+                                <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Manage Stock</span></a>
                             </li>
                             <li>
                                 <a href="#" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
@@ -249,6 +249,7 @@
 <script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-html5-3.0.1/b-print-3.0.1/date-1.5.2/r-3.0.1/datatables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="/js/initDataTables.js"></script>
+<script src="/js/mainScript.js"></script>
 
 <script>
     // Form Validation
@@ -345,6 +346,7 @@
             });
         });
     });
+    const token = localStorage.getItem('jwtToken');
 
     // Function to create a product
     function submitFormAdd() {
@@ -365,6 +367,9 @@
         $.ajax({
             url: submitUrl,
             type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
             contentType: 'application/json',
             data: JSON.stringify(product),
             success: function() {
@@ -402,6 +407,9 @@
         $.ajax({
             url: submitUrl,
             type: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
             contentType: 'application/json',
             data: JSON.stringify(product),
             success: function () {
@@ -425,6 +433,9 @@
         $.ajax({
             url: deleteUrl,
             type: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
             success: function () {
                 Swal.fire('Product Removal Completed!', 'The product has been deleted succesfully.', 'success', 'OK')
                     .then((result) => {
@@ -435,21 +446,6 @@
             },
             error: function (xhr, status, error) {
                 Swal.fire('Failed!', 'An error occurred while deleting the product. Please try again.', 'error');
-            }
-        });
-    }
-
-    // Function to load home page after successful login
-    function loadLandingPage() {
-        $.ajax({
-            url: "/",
-            type: 'GET',
-            success: function() {
-                window.location.href = "/";
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching Home page data:', error);
-                Swal.fire('Error', 'Failed to load home page data. Please try again.', 'error');
             }
         });
     }

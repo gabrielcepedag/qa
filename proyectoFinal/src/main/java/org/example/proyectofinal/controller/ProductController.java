@@ -88,4 +88,10 @@ public class ProductController {
         model.addAttribute("productList", products);
         return "manageProducts";
     }
+
+    @GetMapping("/stock")
+    public String manageStockPage(Model model){
+
+        return "manageStock";
+    }
 }
