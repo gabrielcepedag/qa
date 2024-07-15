@@ -10,6 +10,7 @@ import org.example.proyectofinal.utils.response.CustResponseBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class ProductController {
 
     //TODO: Hacer con filtros de busqueda
     @GetMapping("api/v1/products")
-    private ResponseEntity<?> getAllProducts() {
+    public ResponseEntity<?> getAllProducts() {
         List<Product> products = productService.findAllProducts();
 //      List<Product> productsResponse = Arrays.asList(modelMapper.map(products, CompanyResponse[].class));
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), products);
@@ -43,7 +44,7 @@ public class ProductController {
     }
 
     @GetMapping("api/v1/products/{id}")
-    private ResponseEntity<?> getProductById(@PathVariable Long id) {
+    public ResponseEntity<?> getProductById(@PathVariable Long id) {
         Product product = productService.findOneById(id);
 //        CompanyResponse companyResponse = modelMapper.map(company, CompanyResponse.class);
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
@@ -51,8 +52,9 @@ public class ProductController {
         return response;
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')") //El metodo debe ser public
     @PostMapping("api/v1/products")
-    private ResponseEntity<?> addProduct(@Valid @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<?> addProduct(@Valid @RequestBody ProductRequest productRequest) {
         Product product = productService.createProduct(productRequest);
 //        CompanyResponse companyResponse = modelMapper.map(company, CompanyResponse.class);
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
@@ -60,16 +62,18 @@ public class ProductController {
         return response;
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')") //El metodo debe ser public
     @DeleteMapping("api/v1/products/{id}")
-    private ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         Boolean bool = productService.deleteProductById(id);
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), bool);
 
         return response;
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping("api/v1/products/{id}")
-    private ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequest productRequest) {
         Product product = productService.updateProduct(id, productRequest);
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
 
