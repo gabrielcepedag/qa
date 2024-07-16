@@ -129,6 +129,45 @@ public class ViewProductsTest {
     }
 
     @Test
+    public void testEditProductSuccessful(){
+        // Se prueba que se haya completado el login al validar la URL de redireccion
+        assertEquals("http://localhost:8080/home", page.url());
+
+        // Se selecciona boton de productos
+        page.click("#btn-products");
+
+        // Se define la espera de redireccion
+        page.waitForURL("http://localhost:8080/products");
+
+        // Se prueba que se haya completado la redireccion al validar la URL
+        assertEquals("http://localhost:8080/products", page.url());
+
+        // Selecciona el boton de Editar en el primer producto de la tabla
+        page.click("#tableProducts tbody tr:first-child .edit-btn");
+
+        // Se identifica el modal para agregar el producto
+        page.waitForSelector("#editProductModal");
+
+        // Completamos los campos con un producto valido
+        page.fill("#editDescription", "Updated Product Description");
+        page.fill("#editPrice", "199.99");
+
+        // Se selecciona el botón de confirmar registro
+        page.click("#btnSaveChanges");
+
+        // Se identifica la alerta de registro exitoso
+        page.waitForSelector(".swal2-popup .swal2-title");
+        Locator successAlert = page.locator(".swal2-popup .swal2-title");
+
+        // Se valida el mensaje de registro exitoso
+        assertEquals("Product Modification Completed!", successAlert.innerText());
+
+        // Se cierra la alerta
+        page.click(".swal2-confirm");
+        page.close();
+    }
+
+    @Test
     public void testAddProductEmptyFields(){
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());

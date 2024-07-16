@@ -115,7 +115,7 @@
                                         <td th:text="${user.name}"></td>
                                         <td th:text="${#strings.capitalize(user.role.getValue().toLowerCase())}"></td>
                                         <td>
-                                            <a href="#" id="btnEdit" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue()}" class="text-info edit-btn">
+                                            <a href="#" id="btnEdit" class="text-info edit-btn" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue()}">
                                                 <i class="fs-5 bi bi-pencil-square" title="Edit Information"></i>
                                             </a>
                                             <a href="#" id="btnDelete" th:attr="data-id=${user.id}" class="text-danger delete-btn ms-3">
@@ -149,7 +149,7 @@
                             <label for="username"><b>Username</b></label>
                             <input class="form-control" type="text" id="username" name="username" placeholder="Write the username here" required>
                             <div class="valid-feedback">This username is valid!</div>
-                            <div class="invalid-feedback">This field cannot be blank!</div>
+                            <div class="invalid-feedback">This field cannot be empty!</div>
                         </div>
                         <div class="form-body mb-3">
                             <label for="name"><b>Full Name</b></label>
