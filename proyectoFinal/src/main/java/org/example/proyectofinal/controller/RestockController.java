@@ -1,5 +1,7 @@
 package org.example.proyectofinal.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.example.proyectofinal.dto.response.ProductResponse;
 import org.example.proyectofinal.dto.response.RestockOrderResponse;
 import org.example.proyectofinal.entity.Product;
@@ -12,8 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,15 @@ public class RestockController {
         List<RestockOrder> restockOrders = restockOrderService.findAllRestock(pending);
         List<RestockOrderResponse> orders = Arrays.asList(modelMapper.map(restockOrders, RestockOrderResponse[].class));
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), orders);
+
+        return response;
+    }
+
+    @PutMapping("api/v1/restock/{restockId}")
+    public ResponseEntity<?> updateRestock(@PathVariable Long restockId, @Valid @RequestParam @Positive Integer quantity) {
+        RestockOrder restockOrder = restockOrderService.updateRestock(restockId, quantity);
+        RestockOrderResponse restockOrderResponse = modelMapper.map(restockOrder, RestockOrderResponse.class);
+        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), restockOrderResponse);
 
         return response;
     }

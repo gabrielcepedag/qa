@@ -15,6 +15,7 @@ import org.example.proyectofinal.cons.Category;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
+    private Long id;
     private String name;
     private String description;
     private Double price;
