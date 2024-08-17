@@ -1,6 +1,6 @@
 services:
   inventory:
-#    image: gcepedag/proyecto-final
+#    image: gcepedag/proyecto-final:latest
     build: .
     networks:
       - my-network
