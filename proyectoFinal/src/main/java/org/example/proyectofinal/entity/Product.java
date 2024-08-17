@@ -34,15 +34,4 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
-
-
-    //    private String name;
-//    private String description;
-//    private Double price;
-//    private Integer quantity;
-//    @Column(columnDefinition = "boolean default false")
-//    private boolean deleted;
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private Category category;
 }

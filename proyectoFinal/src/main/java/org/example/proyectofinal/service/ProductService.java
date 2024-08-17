@@ -61,4 +61,20 @@ public class ProductService {
         product.setId(id);
         return productRepository.save(product);
     }
+
+    public Product updateStock(Long id, Integer cant) {
+        Product product = findOneById(id);
+
+        try {
+            if (product.getQuantity() + cant >= 0){
+                product.setQuantity(product.getQuantity() + cant);
+            }else{
+                throw new BadRequestException("Quantity can't be less than 0");
+            }
+
+            return productRepository.save(product);
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
+    }
 }
