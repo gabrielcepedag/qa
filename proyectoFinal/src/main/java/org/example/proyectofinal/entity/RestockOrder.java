@@ -21,5 +21,5 @@ public class RestockOrder {
     private Product product;
     private LocalDateTime creationDate = LocalDateTime.now();
     @Column(columnDefinition = "boolean default true")
-    private boolean active;
+    private boolean pending;
 }

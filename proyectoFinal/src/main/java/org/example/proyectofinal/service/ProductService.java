@@ -5,6 +5,7 @@ import org.example.proyectofinal.entity.Product;
 import org.example.proyectofinal.exception.BadRequestException;
 import org.example.proyectofinal.exception.ResourceNotFoundException;
 import org.example.proyectofinal.repository.ProductRepository;
+import org.example.proyectofinal.utils.SpringContext;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,13 @@ import java.util.List;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
 
-    public ProductService(ProductRepository productRepository, ModelMapper modelMapper) {
-        this.productRepository = productRepository;
+    public ProductService(ModelMapper modelMapper, RestockOrderService restockOrderService, ProductRepository productRepository) {
         this.modelMapper = modelMapper;
+        this.restockOrderService = restockOrderService;
+        this.productRepository = productRepository;
     }
 
     public Product findOneById(Long id) {
@@ -68,6 +71,7 @@ public class ProductService {
         try {
             if (product.getQuantity() + cant >= 0){
                 product.setQuantity(product.getQuantity() + cant);
+                checkQuantity(product);
             }else{
                 throw new BadRequestException("Quantity can't be less than 0");
             }
@@ -75,6 +79,13 @@ public class ProductService {
             return productRepository.save(product);
         }catch (Exception e){
             throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    private void checkQuantity(Product product) {
+        if (product.getQuantity() <= product.getMinQuantity()) {
+            System.out.println("Se va a crear una order de compra -> ProductQuantity: "+product.getQuantity()+ " - MinQuantity: "+product.getMinQuantity());
+            restockOrderService.create(product);
         }
     }
 }

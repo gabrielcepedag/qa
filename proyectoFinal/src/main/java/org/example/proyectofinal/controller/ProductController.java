@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.example.proyectofinal.dto.request.ProductRequest;
+import org.example.proyectofinal.dto.response.ProductResponse;
 import org.example.proyectofinal.entity.Product;
 import org.example.proyectofinal.service.ProductService;
 import org.example.proyectofinal.utils.response.ApiResponse;
@@ -38,7 +39,8 @@ public class ProductController {
     @GetMapping("api/v1/products")
     public ResponseEntity<?> getAllProducts() {
         List<Product> products = productService.findAllProducts();
-        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), products);
+        List<ProductResponse> productResponses = Arrays.asList(modelMapper.map(products, ProductResponse[].class));
+        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), productResponses);
 
         return response;
     }
@@ -46,7 +48,8 @@ public class ProductController {
     @GetMapping("api/v1/products/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
         Product product = productService.findOneById(id);
-        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
+        ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
+        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), productResponse);
 
         return response;
     }
@@ -55,7 +58,8 @@ public class ProductController {
     @PostMapping("api/v1/products")
     public ResponseEntity<?> addProduct(@Valid @RequestBody ProductRequest productRequest) {
         Product product = productService.createProduct(productRequest);
-        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
+        ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
+        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), productResponse);
 
         return response;
     }
@@ -73,7 +77,18 @@ public class ProductController {
     @PutMapping("api/v1/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequest productRequest) {
         Product product = productService.updateProduct(id, productRequest);
-        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
+        ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
+        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), productResponse);
+
+        return response;
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE')")
+    @PostMapping("api/v1/products/{id}/stock")
+    public ResponseEntity<?> updateStock(@PathVariable Long id, @RequestParam @NotNull Integer cant) {
+        Product product = productService.updateStock(id, cant);
+        ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
+        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), productResponse);
 
         return response;
     }
@@ -87,12 +102,5 @@ public class ProductController {
         return "manageProducts";
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE')")
-    @PostMapping("api/v1/products/{id}/stock")
-    public ResponseEntity<?> updateStock(@PathVariable Long id, @RequestParam @NotNull Integer cant) {
-        Product product = productService.updateStock(id, cant);
-        ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), product);
 
-        return response;
-    }
 }

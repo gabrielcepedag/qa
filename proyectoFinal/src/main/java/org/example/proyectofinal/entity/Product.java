@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.proyectofinal.cons.Category;
 import org.example.proyectofinal.cons.ERole;
+import org.example.proyectofinal.service.RestockOrderService;
+import org.example.proyectofinal.utils.SpringContext;
 import org.hibernate.envers.Audited;
 
 import java.util.ArrayList;
@@ -42,14 +44,8 @@ public class Product {
     private Category category;
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RestockOrder> restockOrders = new ArrayList<>();
-
-    @PreUpdate
-    public void preUpdate() {
-        if (quantity <= minQuantity) {
-            System.out.println("Se va a crear una order de compra -> ProductQuantity: "+quantity+ " - MinQuantity: "+minQuantity);
-            RestockOrder restockOrder = new RestockOrder();
-            restockOrder.setProduct(this);
-            restockOrders.add(restockOrder);
-        }
+    
+    public void addRestockOrder(RestockOrder restockOrder) {
+        restockOrders.add(restockOrder);
     }
 }
