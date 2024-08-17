@@ -12,6 +12,9 @@ import org.example.proyectofinal.cons.Category;
 import org.example.proyectofinal.cons.ERole;
 import org.hibernate.envers.Audited;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -29,9 +32,24 @@ public class Product {
     private Double price;
     @PositiveOrZero
     private Integer quantity;
+    @PositiveOrZero
+    @Column(columnDefinition = "integer default 0")
+    private Integer minQuantity;
     @Column(columnDefinition = "boolean default false")
     private boolean deleted;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<RestockOrder> restockOrders = new ArrayList<>();
+
+    @PreUpdate
+    public void preUpdate() {
+        if (quantity <= minQuantity) {
+            System.out.println("Se va a crear una order de compra -> ProductQuantity: "+quantity+ " - MinQuantity: "+minQuantity);
+            RestockOrder restockOrder = new RestockOrder();
+            restockOrder.setProduct(this);
+            restockOrders.add(restockOrder);
+        }
+    }
 }

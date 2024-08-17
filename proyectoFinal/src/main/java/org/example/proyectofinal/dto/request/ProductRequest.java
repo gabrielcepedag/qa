@@ -19,6 +19,8 @@ public class ProductRequest {
     private Double price;
     @PositiveOrZero
     private Integer quantity;
+    @PositiveOrZero
+    private Integer minQuantity;
     @Pattern(regexp = "^(DRINK|FOOD|SNACK)$", message = "Category must be one of: DRINK, FOOD, SNACK")
     private String category;
 }
