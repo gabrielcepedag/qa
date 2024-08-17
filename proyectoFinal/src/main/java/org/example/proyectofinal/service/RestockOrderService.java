@@ -13,11 +13,9 @@ import java.util.List;
 @Service
 public class RestockOrderService {
     private final RestockOrderRepository restockOrderRepository;
-    private ModelMapper modelMapper;
 
-    public RestockOrderService(RestockOrderRepository restockOrderRepository, ModelMapper modelMapper) {
+    public RestockOrderService(RestockOrderRepository restockOrderRepository) {
         this.restockOrderRepository = restockOrderRepository;
-        this.modelMapper = modelMapper;
     }
 
     public void create(Product product) {
@@ -32,6 +30,14 @@ public class RestockOrderService {
         }catch (Exception e){
             e.printStackTrace();
             throw new BadRequestException(e.getMessage(), e.getLocalizedMessage());
+        }
+    }
+
+    public List<RestockOrder> findAllRestock(Boolean pending) {
+        if (pending == null){
+            return restockOrderRepository.findAll();
+        }else{
+            return restockOrderRepository.findAllByPending(pending);
         }
     }
 }

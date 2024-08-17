@@ -26,7 +26,6 @@ public class ProductController {
     private ModelMapper modelMapper;
     private CustResponseBuilder custResponseBuilder;
 
-    //TODO: Validar que todos los usuarios que acceden aqui sean ADMIN
     public ProductController(ProductService productService, ModelMapper modelMapper, CustResponseBuilder custResponseBuilder) {
         this.productService = productService;
         this.modelMapper = modelMapper;

@@ -5,7 +5,6 @@ import org.example.proyectofinal.entity.Product;
 import org.example.proyectofinal.exception.BadRequestException;
 import org.example.proyectofinal.exception.ResourceNotFoundException;
 import org.example.proyectofinal.repository.ProductRepository;
-import org.example.proyectofinal.utils.SpringContext;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +13,10 @@ import java.util.List;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    private final RestockOrderService restockOrderService;
+    private RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
 
-    public ProductService(ModelMapper modelMapper, RestockOrderService restockOrderService, ProductRepository productRepository) {
+    public ProductService(ModelMapper modelMapper, ProductRepository productRepository, RestockOrderService restockOrderService) {
         this.modelMapper = modelMapper;
         this.restockOrderService = restockOrderService;
         this.productRepository = productRepository;

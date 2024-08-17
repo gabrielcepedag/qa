@@ -11,4 +11,6 @@ public interface RestockOrderRepository extends JpaRepository<RestockOrder, Long
     List<RestockOrder> findAllByProductIdAndPendingIsTrue(Long productId);
 
     List<RestockOrder> findAllByProductId(Long id);
+
+    List<RestockOrder> findAllByPending(Boolean pending);
 }

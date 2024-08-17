@@ -8,6 +8,7 @@ import org.example.proyectofinal.exception.BadRequestException;
 import org.example.proyectofinal.exception.ResourceNotFoundException;
 import org.example.proyectofinal.repository.ProductRepository;
 import org.example.proyectofinal.service.ProductService;
+import org.example.proyectofinal.service.RestockOrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,7 @@ public class ProductTest {
     private ProductService productService;
     @Autowired
     private ProductRepository productRepository;
+    private RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
     private ProductRequest productRequest;
     private ProductRequest productRequest2;
@@ -35,10 +37,33 @@ public class ProductTest {
     @BeforeEach
     void setUp() {
         modelMapper = new ModelMapper();
-        productService = new ProductService(productRepository, modelMapper);
-        productRequest = new ProductRequest("Product Request", "Description Request", 800.00, 5, Category.FOOD.getValue());
-        productRequest2 = new ProductRequest("Product Request 2", "Description Request 2", 1500.00, 50, Category.SNACK.getValue());
-        product = new Product(1L, "Product 1", "Description 1", 1000.00, 0, false, Category.DRINK);
+        productService = new ProductService(modelMapper, productRepository, restockOrderService);
+
+        productRequest = ProductRequest
+                .builder()
+                .name("Product Request")
+                .description("Description Request")
+                .price(800.00)
+                .quantity(5)
+                .category(Category.FOOD.getValue())
+                .build();
+        productRequest2 = ProductRequest
+                .builder()
+                .name("Product Request 2")
+                .description("Description Request 2")
+                .price(1500.00)
+                .quantity(50)
+                .category(Category.SNACK.getValue())
+                .build();
+        product = Product
+                .builder()
+                .id(1L)
+                .name("Product 1")
+                .description("Description 1")
+                .price(1000.00)
+                .deleted(false)
+                .category(Category.DRINK)
+                .build();
     }
 
     @Test
