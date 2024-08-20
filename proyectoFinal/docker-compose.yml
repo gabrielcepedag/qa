@@ -1,7 +1,7 @@
 services:
   inventory:
-    image: gcepedag/proyectofinal-inventory:latest
-#    build: .
+#    image: gcepedag/proyecto-final:latest
+    build: .
     networks:
       - my-network
     ports:

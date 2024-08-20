@@ -1,10 +1,12 @@
 package org.example.proyectofinal.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.example.proyectofinal.exception.ForbiddenException;
+import org.example.proyectofinal.exception.UnauthorizedException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -33,12 +35,31 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            Claims claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims;
+        }catch (SignatureException ex) {
+            System.out.println("Error: Invalid JWT signature");
+            throw new ForbiddenException("Error: Invalid JWT signature");
+        } catch (MalformedJwtException ex) {
+            System.out.println("Error: Invalid JWT token");
+            throw new ForbiddenException("Error: Invalid JWT token");
+        } catch (ExpiredJwtException ex) {
+            System.out.println("Error: Expired JWT signature");
+            throw new ForbiddenException("Error: Expired JWT token");
+        } catch (UnsupportedJwtException ex) {
+            System.out.println("Error: Unsupported JWT token");
+            throw new ForbiddenException("Error: Unsupported JWT token");
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Error: JWT claims string is empty");
+            throw new ForbiddenException("Error: JWT claims string is empty");
+        }
+
     }
 
     private Boolean isTokenExpired(String token) {

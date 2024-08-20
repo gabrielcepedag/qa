@@ -13,11 +13,13 @@ import java.util.List;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
 
-    public ProductService(ProductRepository productRepository, ModelMapper modelMapper) {
-        this.productRepository = productRepository;
+    public ProductService(ModelMapper modelMapper, ProductRepository productRepository, RestockOrderService restockOrderService) {
         this.modelMapper = modelMapper;
+        this.restockOrderService = restockOrderService;
+        this.productRepository = productRepository;
     }
 
     public Product findOneById(Long id) {
@@ -60,5 +62,29 @@ public class ProductService {
         modelMapper.map(productRequest, product);
         product.setId(id);
         return productRepository.save(product);
+    }
+
+    public Product updateStock(Long id, Integer cant) {
+        Product product = findOneById(id);
+
+        try {
+            if (product.getQuantity() + cant >= 0){
+                product.setQuantity(product.getQuantity() + cant);
+                checkQuantity(product);
+            }else{
+                throw new BadRequestException("Quantity can't be less than 0");
+            }
+
+            return productRepository.save(product);
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    private void checkQuantity(Product product) {
+        if (product.getQuantity() <= product.getMinQuantity()) {
+            System.out.println("Se va a crear una order de compra -> ProductQuantity: "+product.getQuantity()+ " - MinQuantity: "+product.getMinQuantity());
+            restockOrderService.create(product);
+        }
     }
 }

@@ -1,10 +1,14 @@
 package org.example.proyectofinal.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.proyectofinal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -40,13 +45,9 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "api/v1/users").permitAll()
                             .requestMatchers(HttpMethod.POST, "api/v1/auth").permitAll()
                             .requestMatchers("api/v1/**").authenticated()
-                            .requestMatchers("/css/**").permitAll()
-                            .requestMatchers("/images/**").permitAll()
-                            .requestMatchers("/js/**").permitAll()
-                            .requestMatchers("/**").permitAll()
-                            .requestMatchers("/login").permitAll()
-                            .requestMatchers("/signup").permitAll()
+                            .anyRequest().permitAll()
                 )
+
 //                .sessionManagement(session ->
 //                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //                )

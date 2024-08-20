@@ -41,6 +41,21 @@ public class RestExceptionHandler {
 //        model.addAttribute("errorMessage", exception.getApiResponse().getBody().getMessage());
 //
 //        return "error";
+        System.out.println("En UnauthorizedException voy a devolver: "+exception.getApiResponse().getBody().getMessage());
+        return exception.getApiResponse();
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.FORBIDDEN)
+    public ResponseEntity<ApiResponse> resolveException(ForbiddenException exception) {
+        System.out.println("Paso por ForbiddenException: ");
+
+//        model.addAttribute("errorCode", exception.getApiResponse().getStatusCode().value());
+//        model.addAttribute("errorMessage", exception.getApiResponse().getBody().getMessage());
+//
+//        return "error";
+        System.out.println("En ForbiddenException voy a devolver: "+exception.getApiResponse().getBody().getMessage());
         return exception.getApiResponse();
     }
 
