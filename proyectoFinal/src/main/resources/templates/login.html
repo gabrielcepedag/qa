@@ -74,6 +74,8 @@
                     localStorage.setItem('jwtToken', token);
                     localStorage.setItem('username', username);
 
+                    console.log(JSON.stringify(response));
+
                     loadHomePage();
                 },
                 error: function(xhr, status, error) {
