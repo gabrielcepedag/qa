@@ -17,7 +17,7 @@
 
     <div class="row flex-nowrap">
         <!-- Sidebar Section -->
-        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark sidebar-container">
             <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                 <a href="/" class="d-flex align-items-center pb-3 mb-md-0 mt-md-3 me-md-auto text-white text-decoration-none">
                     <span class="fs-5 d-none d-sm-inline">
@@ -43,7 +43,7 @@
                                 <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Manage Stock</span></a>
                             </li>
                             <li>
-                                <a href="#" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
+                                <a href="/inventory" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
                             </li>
                         </ul>
                     </li>
@@ -52,8 +52,7 @@
                             <i class="fs-4 bi-people-fill"></i> <span class="ms-1 d-none d-sm-inline">Manage Users</span></a>
                     </li>
                 </ul>
-                <hr>
-                <div class="dropdown pb-4">
+                <div class="dropdown mb-2">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="/images/defaultUserIcon.png" alt="User Icon" width="30" height="30" class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1" id="usernameDisplay">More</span>
@@ -73,15 +72,15 @@
         <!-- End of Sidebar Section -->
 
         <!-- Page Content Section -->
-        <div class="col py-3">
+        <div class="col" style="margin-left:18rem">
             <!--  Header  -->
-            <section class="px-5 py-2 py-xxl-10 hcf-bp-center hcf-bs-cover hcf-overlay hcf-transform">
+            <section class="px-5 py-xxl-10 hcf-bp-center hcf-bs-cover hcf-overlay hcf-transform">
                 <div class="container">
                     <div class="row justify-content-md-space-between align-items-center">
                         <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center" style="width: 100% !important">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="display-5 fw-bold mb-3">Manage Users</h4>
-                                <button type="button" class="btn btn-success" id="btn-add-user" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <h4 class="display-5 fw-bold">Manage Users</h4>
+                                <button type="button" class="btn btn-success" id="btn-add-user" data-bs-toggle="modal" data-bs-target="#addUserModal" style="display:none">
                                     <i class="bi bi-plus-circle"></i> Add User
                                 </button>
                             </div>
@@ -115,12 +114,13 @@
                                         <td th:text="${user.name}"></td>
                                         <td th:text="${#strings.capitalize(user.role.getValue().toLowerCase())}"></td>
                                         <td>
-                                            <a href="#" id="btnEdit" class="text-info edit-btn" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue()}">
+                                            <a href="#" id="btnEdit" class="text-info edit-btn" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue()}" style="display:none">
                                                 <i class="fs-5 bi bi-pencil-square" title="Edit Information"></i>
                                             </a>
-                                            <a href="#" id="btnDelete" th:attr="data-id=${user.id}" class="text-danger delete-btn ms-3">
+                                            <a href="#" id="btnDelete" th:attr="data-id=${user.id}" class="text-danger delete-btn ms-3" style="display:none">
                                                 <i class="fs-5 bi bi-trash" title="Delete User"></i>
                                             </a>
+                                            <p id="txtNoActions" style="display:none">No Actions</p>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -239,10 +239,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-html5-3.0.1/b-print-3.0.1/date-1.5.2/r-3.0.1/datatables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/js/initDataTables.js"></script>
+<!--<script src="/js/initDataTables.js"></script>-->
 <script src="/js/mainScript.js"></script>
 
 <script>
+    const token = localStorage.getItem('jwtToken');
+
     // Form Validation
     (function () {
         'use strict'
@@ -269,12 +271,100 @@
     })();
 
     $(document).ready(function() {
-        const editButtons = document.querySelectorAll('.edit-btn');
-        const deleteButtons = document.querySelectorAll('.delete-btn');
         const storedUsername = localStorage.getItem('username');
+        const role = localStorage.getItem('role');
+
+        var tableUsers = $('#tableUsers').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            text: '<i class="fas fa-file-excel"></i>',
+                            className: 'btn-sm btn-success px-4'
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<i class="fas fa-file-pdf"></i>',
+                            className: 'btn-sm btn-danger px-4'
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="fas fa-print"></i>',
+                            className: 'btn-sm btn-secondary px-4'
+                        }
+                    ]
+                }
+            },
+            pageLength: 10,
+            lengthMenu: [5, 10, 15, 25, 50],
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ users",
+                info: "Showing _END_ from _TOTAL_ users",
+                infoEmpty: "No users registered",
+                infoFiltered: "(filtered from _MAX_ total users)",
+                zeroRecords: "No matching users found",
+                emptyTable: "No users registered",
+                responsive: true,
+                paginate: {
+                    first: "&#8676;",
+                    previous: "&#8592;",
+                    next: "&#8594;",
+                    last: "&#8677;"
+                }
+            },
+            drawCallback: function(settings) {
+                $('#tableUsers tbody tr').each(function() {
+                    if (role === 'USER') {
+                        $(this).find('#btnEdit, #btnDelete').hide();
+                        $(this).find('#txtNoActions').show();
+                    } else {
+                        $(this).find('#btnEdit, #btnDelete').show();
+                        $(this).find('#txtNoActions').hide();
+                    }
+                });
+            }
+        });
+
         if (storedUsername) {
             $('#usernameDisplay').text(storedUsername);
         }
+        if (role){
+            if (role !== 'USER') {
+                $('#btn-add-user').show();
+            } else {
+                $('#btn-add-user').hide();
+            }
+        }
+
+        initializeEventListeners();
+        tableUsers.on('draw', function() {
+            initializeEventListeners();
+        });
+
+        $('#logoutBtn').click(function() {
+            event.preventDefault()
+            Swal.fire({
+                title: "Log Out Confirmation",
+                text: "Are you sure you want to sign out?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#505050',
+                confirmButtonText: 'Yes, sign out'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    loadLandingPage();
+                }
+            });
+        });
+    });
+
+    // Initialize button event listeners
+    function initializeEventListeners() {
+        const editButtons = document.querySelectorAll('.edit-btn');
+        const deleteButtons = document.querySelectorAll('.delete-btn');
 
         editButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -296,7 +386,7 @@
         });
 
         deleteButtons.forEach(btn => {
-            btn.addEventListener('click', function (event) {
+            btn.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent default link behavior
 
                 const userId = this.getAttribute('data-id');
@@ -316,25 +406,7 @@
                 });
             });
         });
-
-        $('#logoutBtn').click(function() {
-            event.preventDefault()
-            Swal.fire({
-                title: "Log Out Confirmation",
-                text: "Are you sure you want to sign out?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#505050',
-                confirmButtonText: 'Yes, sign out'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    loadLandingPage();
-                }
-            });
-        });
-    });
-    const token = localStorage.getItem('jwtToken');
+    }
 
     // Function to create an User
     function submitFormAdd() {

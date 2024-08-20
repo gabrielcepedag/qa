@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -47,5 +48,20 @@ public class RestockController {
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), restockOrderResponse);
 
         return response;
+    }
+
+    //=================== VIEWS ==========================
+    @GetMapping("/stock")
+    public String manageStockPage(Model model){
+        model.addAttribute("productList", null);
+
+        return "manageStock";
+    }
+
+    @GetMapping("/inventory")
+    public String manageInventoryMovementsPage(Model model){
+        model.addAttribute("productList", null);
+
+        return "manageMovements";
     }
 }

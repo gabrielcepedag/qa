@@ -6,6 +6,7 @@ function loadLandingPage() {
         success: function() {
             localStorage.removeItem('jwtToken');
             localStorage.removeItem('username');
+            localStorage.removeItem('role');
             window.location.href = "/";
         },
         error: function(xhr, status, error) {

@@ -6,7 +6,9 @@ import lombok.Getter;
 import org.example.proyectofinal.dto.request.ProductRequest;
 import org.example.proyectofinal.dto.response.ProductResponse;
 import org.example.proyectofinal.entity.Product;
+import org.example.proyectofinal.entity.User;
 import org.example.proyectofinal.service.ProductService;
+import org.example.proyectofinal.service.UserService;
 import org.example.proyectofinal.utils.response.ApiResponse;
 import org.example.proyectofinal.utils.response.CustResponseBuilder;
 import org.modelmapper.ModelMapper;
@@ -23,13 +25,15 @@ import java.util.List;
 @Controller
 public class ProductController {
     private final ProductService productService;
+    private final UserService userService;
     private ModelMapper modelMapper;
     private CustResponseBuilder custResponseBuilder;
 
-    public ProductController(ProductService productService, ModelMapper modelMapper, CustResponseBuilder custResponseBuilder) {
+    public ProductController(ProductService productService, ModelMapper modelMapper, CustResponseBuilder custResponseBuilder, UserService userService) {
         this.productService = productService;
         this.modelMapper = modelMapper;
         this.custResponseBuilder = custResponseBuilder;
+        this.userService = userService;
     }
 
     //===================================== API =========================================
@@ -98,6 +102,7 @@ public class ProductController {
         List<Product> products = productService.findAllProducts();
 
         model.addAttribute("productList", products);
+
         return "manageProducts";
     }
 

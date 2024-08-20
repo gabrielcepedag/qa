@@ -71,8 +71,10 @@
                 success: function(response) {
                     // Save the JWT to local storage
                     const token = response.data.accessToken;
+                    const role = response.data.role[0].authority;
                     localStorage.setItem('jwtToken', token);
                     localStorage.setItem('username', username);
+                    localStorage.setItem('role', role);
 
                     console.log(JSON.stringify(response));
 
