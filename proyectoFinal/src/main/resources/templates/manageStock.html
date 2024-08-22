@@ -88,8 +88,78 @@
             </section>
             <!--  end of Header -->
 
+            <!-- Table Products -->
+            <section id="products">
+                <div class="container">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-md-12">
+                            <div class="table-responsive" id="tableContainer">
+                                <table class="table table-bordered table-hover" id="tableProductStock">
+                                    <thead class="header">
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Stock</th>
+                                        <th>Manage</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="dataProducts">
+                                    <tr th:each="product : ${productList}">
+                                        <td th:text="${product.id}"></td>
+                                        <td th:text="${product.name}"></td>
+                                        <td th:text="${product.description}"></td>
+                                        <td th:text="${product.quantity}"></td>
+                                        <td>
+                                            <a href="#" id="btnStockPlus" th:attr="data-id=${product.id},data-name=${product.name},data-action='add'" class="text-success add-stock" title="Increase Stock" style="display:none">
+                                                <i class="h4 fa-solid fa-circle-plus"></i>
+                                            </a>
+                                            <a href="#" id="btnStockMinus" th:attr="data-id=${product.id},data-name=${product.name},data-action='rem'" class="text-danger ms-3 remove-stock" title="Decrease Stock" style="display:none">
+                                                <i class="h4 fa-solid fa-circle-minus"></i>
+                                            </a>
+                                            <p id="txtNoActions" style="display:none">No Actions</p>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- end of tableProducts -->
         </div>
         <!-- End of Page Content Section -->
+
+        <!-- Manage Stock Modal -->
+        <div id="manageStockModal" class="modal fade" tabindex="-1" aria-labelledby="manageStockModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form class="requires-validation" id="contactForm" novalidate>
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="manageStockModalLabel">Add Product Stock</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="productId" name="id">
+                            <input type="hidden" id="stockAction" name="stockAction">
+                            <div class="form-body mb-3">
+                                <label for="stockChange"><b>Product List Price</b></label>
+                                <input class="form-control" type="number" id="stockChange" name="cant" placeholder="Enter the stock movement amount" min="1" step="1" required>
+                                <div class="valid-feedback">This amount is valid!</div>
+                                <div class="invalid-feedback">This amount is invalid!</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancel">
+                            <input type="submit" class="btn btn-success" value="Save" id="btnSubmit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- End of AddProductModal -->
+
     </div>
 </div>
 
@@ -100,15 +170,102 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-html5-3.0.1/b-print-3.0.1/date-1.5.2/r-3.0.1/datatables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/js/initDataTables.js"></script>
 <script src="/js/mainScript.js"></script>
 
 <script>
+    const token = localStorage.getItem('jwtToken');
+    // Form Validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.requires-validation');
+        Array.from(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    event.preventDefault();
+                    const submitter = event.submitter;
+                    if (submitter && submitter.id === 'btnSubmit') {
+                        const productId = document.getElementById('productId').value;
+                        let productStockChange = document.getElementById('stockChange').value;
+                        const stockAction = document.getElementById('stockAction').value;
+                        if(stockAction === "rem"){
+                            productStockChange = productStockChange * -1;
+                        }
+                        submitStockChange(productId,productStockChange);
+                    }
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+    
     $(document).ready(function() {
         const storedUsername = localStorage.getItem('username');
+        const role = localStorage.getItem('role');
+
+        var tableProductStocks = $('#tableProductStock').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            text: '<i class="fas fa-file-excel"></i>',
+                            className: 'btn-sm btn-success px-4'
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<i class="fas fa-file-pdf"></i>',
+                            className: 'btn-sm btn-danger px-4'
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="fas fa-print"></i>',
+                            className: 'btn-sm btn-secondary px-4'
+                        }
+                    ]
+                }
+            },
+            pageLength: 10,
+            lengthMenu: [5, 10, 15, 25, 50],
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ products",
+                info: "Showing _END_ from _TOTAL_ products",
+                infoEmpty: "No products registered",
+                infoFiltered: "(filtered from _MAX_ total products)",
+                zeroRecords: "No matching products found",
+                emptyTable: "No products registered",
+                responsive: true,
+                paginate: {
+                    first: "&#8676;",
+                    previous: "&#8592;",
+                    next: "&#8594;",
+                    last: "&#8677;"
+                }
+            },
+            drawCallback: function(settings) {
+                $('#tableProductStock tbody tr').each(function() {
+                    if (role === 'USER') {
+                        $(this).find('#btnStockPlus, #btnStockMinus').hide();
+                        $(this).find('#txtNoActions').show();
+                    } else {
+                        $(this).find('#btnStockMinus, #btnStockPlus').show();
+                        $(this).find('#txtNoActions').hide();
+                    }
+                });
+            }
+        });
+
         if (storedUsername) {
             $('#usernameDisplay').text(storedUsername);
         }
+        initializeEventListeners();
+
+        tableProductStocks.on('draw', function() {
+            initializeEventListeners();
+        });
 
         $('#logoutBtn').click(function() {
             event.preventDefault()
@@ -127,6 +284,70 @@
             });
         });
     });
+
+    // Initialize button event listeners
+    function initializeEventListeners() {
+        const addStockButtons = document.querySelectorAll('.add-stock');
+        const removeStockButtons = document.querySelectorAll('.remove-stock');
+
+        function handleStockButtonClick() {
+            const productId = this.getAttribute('data-id');
+            const productName = this.getAttribute('data-name');
+            const stockAction = this.getAttribute('data-action');
+
+            const modalTitle = document.getElementById('manageStockModalLabel');
+            const productLabel = document.querySelector('label[for="stockChange"]');
+            document.getElementById('productId').value = productId;
+            document.getElementById('stockAction').value = stockAction;
+
+            if (stockAction === 'add') {
+                modalTitle.textContent = 'Add Product Stock';
+                productLabel.textContent = `Adding stock to: ${productName}`;
+            } else {
+                modalTitle.textContent = 'Remove Product Stock';
+                productLabel.textContent = `Removing stock from: ${productName}`;
+            }
+            const addStockModal = new bootstrap.Modal(document.getElementById('manageStockModal'));
+            addStockModal.show();
+        }
+
+        addStockButtons.forEach(button => {
+            button.addEventListener('click', handleStockButtonClick);
+        });
+        removeStockButtons.forEach(button => {
+            button.addEventListener('click', handleStockButtonClick);
+        });
+    }
+
+    // Function to edit product
+    function submitStockChange(productId, productStock) {
+        const submitUrl = "/api/v1/products/" + productId + "/stock?cant=" + productStock;
+        const submitBtn = $('#btnSubmit');
+        submitBtn.prop('disabled', true);
+
+        $.ajax({
+            url: submitUrl,
+            type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            contentType: 'application/json',
+            success: function () {
+                Swal.fire('Stock Modification Completed!', 'The product stock modification has been saved successfully.', 'success', 'OK')
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+            },
+            error: function (xhr, status, error) {
+                submitBtn.prop('disabled', false);
+                let response = xhr.responseJSON;
+                let errorMessage = response && response.message ? response.message : 'An error occurred while saving the information. Please try again.';
+                Swal.fire('Stock Modification Failed', errorMessage, 'error');
+            }
+        });
+    }
 </script>
 
 </body>

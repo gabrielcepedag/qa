@@ -25,11 +25,13 @@ public class RestockController {
     private final RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
     private CustResponseBuilder custResponseBuilder;
+    private final ProductService productService;
 
-    public RestockController(RestockOrderService restockOrderService, ModelMapper modelMapper, CustResponseBuilder custResponseBuilder) {
+    public RestockController(RestockOrderService restockOrderService, ModelMapper modelMapper, CustResponseBuilder custResponseBuilder, ProductService productService) {
         this.restockOrderService = restockOrderService;
         this.modelMapper = modelMapper;
         this.custResponseBuilder = custResponseBuilder;
+        this.productService = productService;
     }
 
     @GetMapping("api/v1/restock")
@@ -53,7 +55,8 @@ public class RestockController {
     //=================== VIEWS ==========================
     @GetMapping("/stock")
     public String manageStockPage(Model model){
-        model.addAttribute("productList", null);
+        List<Product> products = productService.findAllProducts();
+        model.addAttribute("productList", products);
 
         return "manageStock";
     }
