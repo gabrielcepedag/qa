@@ -12,6 +12,12 @@
     <link rel="stylesheet" href="/css/mainStyle.css">
 </head>
 <body>
+<script>
+    const jwt = localStorage.getItem('jwtToken');
+    if (!jwt) {
+        window.location.href = '/';
+    }
+</script>
 
 <div class="container-fluid">
     <div class="row flex-nowrap">
@@ -36,13 +42,16 @@
                     </li>
                     <li class="nav-item">
                         <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white stock-dropdown">
-                            <i class="fs-4 bi-boxes"></i> <span class="ms-1 d-none d-sm-inline">Stock</span> </a>
+                            <i class="fs-4 bi-boxes"></i> <span class="ms-1 d-none d-sm-inline">Manage Stock</span> </a>
                         <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                             <li class="w-100">
-                                <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Manage Stock</span></a>
+                                <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Your Stock</span></a>
                             </li>
-                            <li>
-                                <a href="/inventory" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
+                            <li class="w-100">
+                                <a href="/stock/restock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Restock Orders</span></a>
+                            </li>
+                            <li class="w-100">
+                                <a href="/stock/history" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
                             </li>
                         </ul>
                     </li>

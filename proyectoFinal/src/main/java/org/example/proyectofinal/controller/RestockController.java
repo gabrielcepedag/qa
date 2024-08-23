@@ -61,9 +61,21 @@ public class RestockController {
         return "manageStock";
     }
 
-    @GetMapping("/inventory")
+    @GetMapping("/stock/restock")
+    public String manageRestockPage(Model model){
+        List<RestockOrder> restockOrders = restockOrderService.findAllRestock(true);
+
+        model.addAttribute("restockOrdersList", restockOrders);
+
+        return "manageRestockOrders";
+    }
+
+    @GetMapping("/stock/history")
     public String manageInventoryMovementsPage(Model model){
-        model.addAttribute("productList", null);
+        List<RestockOrder> restockOrders = restockOrderService.findAllRestock(null);
+//        System.out.println(restockOrders.toString());
+
+        model.addAttribute("restockOrdersList", restockOrders);
 
         return "manageMovements";
     }

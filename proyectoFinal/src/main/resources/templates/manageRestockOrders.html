@@ -47,10 +47,10 @@
                             <i class="fs-4 bi-boxes"></i> <span class="ms-1 d-none d-sm-inline">Manage Stock</span> </a>
                         <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                             <li class="w-100">
-                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Your Stock</span></a>
+                                <a href="#" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Your Stock</span></a>
                             </li>
                             <li class="w-100">
-                                <a href="/stock/restock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Restock Orders</span></a>
+                                <a href="/stock/restock" class="nav-link px-0"> <span class="d-none d-sm-inline">Restock Orders</span></a>
                             </li>
                             <li class="w-100">
                                 <a href="/stock/history" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
@@ -89,7 +89,7 @@
                     <div class="row justify-content-md-space-between align-items-center">
                         <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center" style="width: 100% !important">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="display-5 fw-bold">Manage Stock</h4>
+                                <h4 class="display-5 fw-bold">Restock Purchase Orders</h4>
                             </div>
                         </div>
                     </div>
@@ -104,30 +104,31 @@
                     <div class="row justify-content-between align-items-center">
                         <div class="col-md-12">
                             <div class="table-responsive" id="tableContainer">
-                                <table class="table table-bordered table-hover" id="tableProductStock">
+                                <table class="table table-bordered table-hover" id="tableProductRestock">
                                     <thead class="header">
                                     <tr>
-                                        <th>Code</th>
-                                        <th>Name</th>
-                                        <th>Description</th>
+                                        <th>Order Number</th>
+                                        <th>Order Date</th>
+                                        <th>Product Code</th>
+                                        <th>Product Name</th>
+                                        <th>Product Category</th>
                                         <th>Minimum Stock</th>
                                         <th>Available Stock</th>
-                                        <th>Manage</th>
+                                        <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody id="dataProducts">
-                                    <tr th:each="product : ${productList}">
-                                        <td th:text="${product.id}"></td>
-                                        <td th:text="${product.name}"></td>
-                                        <td th:text="${product.description}"></td>
-                                        <td th:text="${product.minQuantity}"></td>
-                                        <td th:text="${product.quantity}"></td>
+                                    <tr th:each="order : ${restockOrdersList}">
+                                        <td th:text="${order.id}"></td>
+                                        <td th:text="${#strings.substring(order.creationDate, 8, 10) + '/' + #strings.substring(order.creationDate, 5, 7) + '/' + #strings.substring(order.creationDate, 0, 4) + ' ' + #strings.substring(order.creationDate, 11, 16)}"></td>
+                                        <td th:text="${order.product.id}"></td>
+                                        <td th:text="${order.product.name}"></td>
+                                        <td th:text="${#strings.capitalize(order.product.category.getValue().toLowerCase())}"></td>
+                                        <td th:text="${order.product.minQuantity}"></td>
+                                        <td th:text="${order.product.quantity}"></td>
                                         <td>
-                                            <a href="#" id="btnStockPlus" th:attr="data-id=${product.id},data-name=${product.name},data-action='add'" class="text-success add-stock" title="Increase Stock" style="display:none">
-                                                <i class="h4 fa-solid fa-circle-plus"></i>
-                                            </a>
-                                            <a href="#" id="btnStockMinus" th:attr="data-id=${product.id},data-name=${product.name},data-action='rem'" class="text-danger ms-3 remove-stock" title="Decrease Stock" style="display:none">
-                                                <i class="h4 fa-solid fa-circle-minus"></i>
+                                            <a href="#" id="btnRestock" th:attr="data-id=${order.id}, data-name=${order.product.name}, data-productId=${order.product.id}" class="text-success restock" title="Restock Product" style="display:none">
+                                                <i class="h4 fa-solid fa-boxes-packing"></i>
                                             </a>
                                             <p id="txtNoActions" style="display:none">No Actions</p>
                                         </td>
@@ -149,15 +150,14 @@
                 <div class="modal-content">
                     <form class="requires-validation" id="contactForm" novalidate>
                         <div class="modal-header">
-                            <h4 class="modal-title" id="manageStockModalLabel">Add Product Stock</h4>
+                            <h4 class="modal-title" id="manageStockModalLabel">Restock Product</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" id="productId" name="id">
-                            <input type="hidden" id="stockAction" name="stockAction">
+                            <input type="hidden" id="orderId" name="id">
                             <div class="form-body mb-3">
-                                <label for="stockChange"><b>Product List Price</b></label>
-                                <input class="form-control" type="number" id="stockChange" name="cant" placeholder="Enter the stock movement amount" min="1" step="1" required>
+                                <label for="stockChange"><b></b></label>
+                                <input class="form-control mt-2" type="number" id="stockChange" name="cant" placeholder="Enter the amount to restock" min="1" step="1" required>
                                 <div class="valid-feedback">This amount is valid!</div>
                                 <div class="invalid-feedback">This amount is invalid!</div>
                             </div>
@@ -199,13 +199,9 @@
                     event.preventDefault();
                     const submitter = event.submitter;
                     if (submitter && submitter.id === 'btnSubmit') {
-                        const productId = document.getElementById('productId').value;
+                        const orderId = document.getElementById('orderId').value;
                         let productStockChange = document.getElementById('stockChange').value;
-                        const stockAction = document.getElementById('stockAction').value;
-                        if(stockAction === "rem"){
-                            productStockChange = productStockChange * -1;
-                        }
-                        submitStockChange(productId,productStockChange);
+                        submitStockChange(orderId,productStockChange);
                     }
                 }
                 form.classList.add('was-validated');
@@ -217,7 +213,7 @@
         const storedUsername = localStorage.getItem('username');
         const role = localStorage.getItem('role');
 
-        var tableProductStocks = $('#tableProductStock').DataTable({
+        var tableProductRestocks = $('#tableProductRestock').DataTable({
             layout: {
                 topStart: {
                     buttons: [
@@ -243,12 +239,12 @@
             lengthMenu: [5, 10, 15, 25, 50],
             language: {
                 search: "Search:",
-                lengthMenu: "Show _MENU_ products",
-                info: "Showing _END_ from _TOTAL_ products",
-                infoEmpty: "No products registered",
-                infoFiltered: "(filtered from _MAX_ total products)",
-                zeroRecords: "No matching products found",
-                emptyTable: "No products registered",
+                lengthMenu: "Show _MENU_ orders",
+                info: "Showing _END_ from _TOTAL_ orders",
+                infoEmpty: "You have no Pending Purchase Orders at this moment",
+                infoFiltered: "(filtered from _MAX_ total orders)",
+                zeroRecords: "No matching orders found",
+                emptyTable: "No pending orders",
                 responsive: true,
                 paginate: {
                     first: "&#8676;",
@@ -258,12 +254,12 @@
                 }
             },
             drawCallback: function(settings) {
-                $('#tableProductStock tbody tr').each(function() {
+                $('#tableProductRestock tbody tr').each(function() {
                     if (role === 'USER') {
-                        $(this).find('#btnStockPlus, #btnStockMinus').hide();
+                        $(this).find('#btnRestock').hide();
                         $(this).find('#txtNoActions').show();
                     } else {
-                        $(this).find('#btnStockMinus, #btnStockPlus').show();
+                        $(this).find('#btnRestock').show();
                         $(this).find('#txtNoActions').hide();
                     }
                 });
@@ -275,7 +271,7 @@
         }
         initializeEventListeners();
 
-        tableProductStocks.on('draw', function() {
+        tableProductRestocks.on('draw', function() {
             initializeEventListeners();
         });
 
@@ -299,53 +295,41 @@
 
     // Initialize button event listeners
     function initializeEventListeners() {
-        const addStockButtons = document.querySelectorAll('.add-stock');
-        const removeStockButtons = document.querySelectorAll('.remove-stock');
+        const restockButtons = document.querySelectorAll('.restock');
 
         function handleStockButtonClick() {
-            const productId = this.getAttribute('data-id');
+            const orderId = this.getAttribute('data-id');
             const productName = this.getAttribute('data-name');
-            const stockAction = this.getAttribute('data-action');
+            const productId = this.getAttribute('data-productId');
 
-            const modalTitle = document.getElementById('manageStockModalLabel');
             const productLabel = document.querySelector('label[for="stockChange"]');
-            document.getElementById('productId').value = productId;
-            document.getElementById('stockAction').value = stockAction;
+            document.getElementById('orderId').value = orderId;
+            productLabel.textContent = `Restocking Product: ${productId} - ${productName}`;
 
-            if (stockAction === 'add') {
-                modalTitle.textContent = 'Add Product Stock';
-                productLabel.textContent = `Adding stock to: ${productName}`;
-            } else {
-                modalTitle.textContent = 'Remove Product Stock';
-                productLabel.textContent = `Removing stock from: ${productName}`;
-            }
             const addStockModal = new bootstrap.Modal(document.getElementById('manageStockModal'));
             addStockModal.show();
         }
 
-        addStockButtons.forEach(button => {
-            button.addEventListener('click', handleStockButtonClick);
-        });
-        removeStockButtons.forEach(button => {
+        restockButtons.forEach(button => {
             button.addEventListener('click', handleStockButtonClick);
         });
     }
 
     // Function to edit product
-    function submitStockChange(productId, productStock) {
-        const submitUrl = "/api/v1/products/" + productId + "/stock?cant=" + productStock;
+    function submitStockChange(orderId, quantity) {
+        const submitUrl = "/api/v1/restock/" + orderId + "?quantity="+quantity;
         const submitBtn = $('#btnSubmit');
         submitBtn.prop('disabled', true);
 
         $.ajax({
             url: submitUrl,
-            type: 'POST',
+            type: 'PUT',
             headers: {
                 'Authorization': 'Bearer ' + token
             },
             contentType: 'application/json',
             success: function () {
-                Swal.fire('Stock Modification Completed!', 'The product stock modification has been saved successfully.', 'success', 'OK')
+                Swal.fire('Restock Action Completed!', 'The product stock modification has been saved successfully.', 'success', 'OK')
                     .then((result) => {
                         if (result.isConfirmed) {
                             location.reload();
@@ -356,7 +340,7 @@
                 submitBtn.prop('disabled', false);
                 let response = xhr.responseJSON;
                 let errorMessage = response && response.message ? response.message : 'An error occurred while saving the information. Please try again.';
-                Swal.fire('Stock Modification Failed', errorMessage, 'error');
+                Swal.fire('Restock Action Failed', errorMessage, 'error');
             }
         });
     }

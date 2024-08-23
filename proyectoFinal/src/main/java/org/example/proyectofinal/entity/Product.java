@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.proyectofinal.cons.Category;
 import org.hibernate.envers.Audited;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class Product {
     @Column(nullable = false)
     private Category category;
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<RestockOrder> restockOrders = new ArrayList<>();
+    private List<RestockOrder> restockOrders;
 
     public void addRestockOrder(RestockOrder restockOrder) {
         restockOrders.add(restockOrder);
