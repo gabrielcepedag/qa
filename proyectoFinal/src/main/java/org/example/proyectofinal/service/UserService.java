@@ -9,10 +9,14 @@ import org.example.proyectofinal.exception.ResourceNotFoundException;
 import org.example.proyectofinal.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -83,5 +87,28 @@ public class UserService {
         }catch (Exception e){
             throw new BadRequestException(e.getMessage());
         }
+    }
+
+    public User getUserLoggued(){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() != null) {
+                User user = (User) authentication.getPrincipal();
+
+                Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+                if (!authorities.isEmpty()) {
+                    GrantedAuthority authority = authorities.iterator().next();
+                    ERole role = ERole.valueOf(authority.getAuthority());
+                    user.setRole(role);
+                }
+
+                return (User) authentication.getPrincipal();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new BadRequestException("Authentication Error: " + e.getMessage());
+        }
+        throw new BadRequestException("Error in ProductService::GetUserLoggued");
     }
 }

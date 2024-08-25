@@ -1,13 +1,21 @@
 package org.example.proyectofinal.service;
 
+import org.example.proyectofinal.cons.ERole;
 import org.example.proyectofinal.dto.request.ProductRequest;
 import org.example.proyectofinal.entity.Product;
+import org.example.proyectofinal.entity.ProductHistory;
+import org.example.proyectofinal.entity.User;
 import org.example.proyectofinal.exception.BadRequestException;
 import org.example.proyectofinal.exception.ResourceNotFoundException;
 import org.example.proyectofinal.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -15,11 +23,13 @@ public class ProductService {
     private final ProductRepository productRepository;
     private RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
+    private ProductHistoryService productHistoryService;
 
-    public ProductService(ModelMapper modelMapper, ProductRepository productRepository, RestockOrderService restockOrderService) {
-        this.modelMapper = modelMapper;
-        this.restockOrderService = restockOrderService;
+    public ProductService(ProductRepository productRepository, RestockOrderService restockOrderService, ModelMapper modelMapper, ProductHistoryService productHistoryService) {
         this.productRepository = productRepository;
+        this.restockOrderService = restockOrderService;
+        this.modelMapper = modelMapper;
+        this.productHistoryService = productHistoryService;
     }
 
     public Product findOneById(Long id) {
@@ -61,8 +71,14 @@ public class ProductService {
 
         modelMapper.map(productRequest, product);
         product.setId(id);
+        if (!productRequest.getQuantity().equals(product.getQuantity())){
+            productHistoryService.createHistory(product, productRequest.getQuantity());
+        }
         return productRepository.save(product);
     }
+
+
+
 
     public Product updateStock(Long id, Integer cant) {
         Product product = findOneById(id);
@@ -71,6 +87,7 @@ public class ProductService {
             if (product.getQuantity() + cant >= 0){
                 product.setQuantity(product.getQuantity() + cant);
                 checkQuantity(product);
+                productHistoryService.createHistory(product, cant);
             }else{
                 throw new BadRequestException("Quantity can't be less than 0");
             }
