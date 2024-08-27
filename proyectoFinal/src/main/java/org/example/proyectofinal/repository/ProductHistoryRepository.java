@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ProductHistoryRepository extends JpaRepository<ProductHistory, Long> {
-    public List<ProductHistory> findAllByProductId(Long productId);
-    public List<ProductHistory> findAllOrderByDate();
+    List<ProductHistory> findAllByProductId(Long productId);
+    List<ProductHistory> findAllOrderByDate();
 }
