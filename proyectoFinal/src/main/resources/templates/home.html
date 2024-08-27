@@ -42,17 +42,17 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white stock-dropdown">
+                        <a href="#submenu1" id="stockDropdown" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white stock-dropdown">
                             <i class="fs-4 bi-boxes"></i><span class="ms-1 d-none d-sm-inline">Manage Stock</span></a>
                         <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                             <li class="w-100">
                                 <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Your Stock</span></a>
                             </li>
                             <li class="w-100">
-                                <a href="/stock/restock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Restock Orders</span></a>
+                                <a href="/stock/restock" class="nav-link px-0 text-white" id="menuRestockBtn"> <span class="d-none d-sm-inline">Restock Orders</span></a>
                             </li>
                             <li class="w-100">
-                                <a href="/stock/history" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
+                                <a href="/stock/history" class="nav-link px-0 text-white" id="menuMovementsBtn"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
                             </li>
                         </ul>
                     </li>

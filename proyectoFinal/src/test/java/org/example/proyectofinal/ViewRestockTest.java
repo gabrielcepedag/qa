@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ViewStockTest {
+public class ViewRestockTest {
     private Playwright playwright;
     private Browser browser;
     private BrowserContext context;
@@ -52,13 +52,16 @@ public class ViewStockTest {
         assertEquals("http://localhost:8080/home", page.url());
 
         // Se selecciona boton de productos
-        page.click("#btn-stock");
+        page.click("#stockDropdown");
+
+        // Se selecciona boton de productos
+        page.click("#menuRestockBtn");
 
         // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/stock");
+        page.waitForURL("http://localhost:8080/stock/restock");
 
         // Se prueba que se haya completado la redireccion al validar la URL
-        assertEquals("http://localhost:8080/stock", page.url());
+        assertEquals("http://localhost:8080/stock/restock", page.url());
 
         // Se selecciona boton de Dropdown de Usuario
         page.click("#dropdownUser1");
@@ -87,27 +90,30 @@ public class ViewStockTest {
     }
 
     @Test
-    public void testAddStockSuccessful(){
+    public void testPerformRestockSuccessful(){
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());
 
         // Se selecciona boton de productos
-        page.click("#btn-stock");
+        page.click("#stockDropdown");
+
+        // Se selecciona boton de productos
+        page.click("#menuRestockBtn");
 
         // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/stock");
+        page.waitForURL("http://localhost:8080/stock/restock");
 
         // Se prueba que se haya completado la redireccion al validar la URL
-        assertEquals("http://localhost:8080/stock", page.url());
+        assertEquals("http://localhost:8080/stock/restock", page.url());
 
         // Selecciona el boton de Editar en el primer producto de la tabla
-        page.click("#tableProductStock tbody tr:first-child #btnStockPlus");
+        page.click("#tableProductRestock tbody tr:first-child #btnRestock");
 
         // Se identifica el modal para agregar el producto
         page.waitForSelector("#manageStockModal");
 
         // Completamos los campos con un producto valido
-        page.fill("#stockChange", String.valueOf(20));
+        page.fill("#stockChange", String.valueOf(5));
 
         // Se selecciona el botón de confirmar registro
         page.click("#btnSubmit");
@@ -117,7 +123,7 @@ public class ViewStockTest {
         Locator successAlert = page.locator(".swal2-popup .swal2-title");
 
         // Se valida el mensaje de registro exitoso
-        assertEquals("Stock Modification Completed!", successAlert.innerText());
+        assertEquals("Restock Action Completed!", successAlert.innerText());
 
         // Se cierra la alerta
         page.click(".swal2-confirm");
@@ -126,95 +132,24 @@ public class ViewStockTest {
     }
 
     @Test
-    public void testRemoveStockSuccessful(){
+    public void testRestockEmptyFields(){
         // Se prueba que se haya completado el login al validar la URL de redireccion
         assertEquals("http://localhost:8080/home", page.url());
 
         // Se selecciona boton de productos
-        page.click("#btn-stock");
+        page.click("#stockDropdown");
+
+        // Se selecciona boton de productos
+        page.click("#menuRestockBtn");
 
         // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/stock");
+        page.waitForURL("http://localhost:8080/stock/restock");
 
         // Se prueba que se haya completado la redireccion al validar la URL
-        assertEquals("http://localhost:8080/stock", page.url());
+        assertEquals("http://localhost:8080/stock/restock", page.url());
 
         // Selecciona el boton de Editar en el primer producto de la tabla
-        page.click("#tableProductStock tbody tr:first-child #btnStockMinus");
-
-        // Se identifica el modal para agregar el producto
-        page.waitForSelector("#manageStockModal");
-
-        // Completamos los campos con un producto valido
-        page.fill("#stockChange", String.valueOf(15));
-
-        // Se selecciona el botón de confirmar registro
-        page.click("#btnSubmit");
-
-        // Se identifica la alerta de registro exitoso
-        page.waitForSelector(".swal2-popup .swal2-title");
-        Locator successAlert = page.locator(".swal2-popup .swal2-title");
-
-        // Se valida el mensaje de registro exitoso
-        assertEquals("Stock Modification Completed!", successAlert.innerText());
-
-        // Se cierra la alerta
-        page.click(".swal2-confirm");
-        page.close();
-    }
-
-    @Test
-    public void testAddStockEmptyFields(){
-        // Se prueba que se haya completado el login al validar la URL de redireccion
-        assertEquals("http://localhost:8080/home", page.url());
-
-        // Se selecciona boton de productos
-        page.click("#btn-stock");
-
-        // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/stock");
-
-        // Se prueba que se haya completado la redireccion al validar la URL
-        assertEquals("http://localhost:8080/stock", page.url());
-
-        page.click("#tableProductStock tbody tr:first-child #btnStockPlus");
-
-        // Se identifica el modal para agregar el producto
-        page.waitForSelector("#manageStockModal");
-
-        // Se selecciona el botón de confirmar registro
-        page.click("#btnSubmit");
-
-        // Se definen los identificadores de los mensajes de error
-        Locator stockInvalidFeedback = page.locator("#stockChange ~ .invalid-feedback");
-
-        // Se valida que los mensajes de entrada invalida son desplegados
-        assertTrue(stockInvalidFeedback.isVisible());
-
-        // Se valida el contenido de los mensajes invalidos
-        assertEquals("This amount is invalid!", stockInvalidFeedback.innerText());
-
-        // Se selecciona el botón de cancelar
-        page.click("#btnCancel");
-
-        page.close();
-    }
-
-    @Test
-    public void testRemoveStockEmptyFields(){
-        // Se prueba que se haya completado el login al validar la URL de redireccion
-        assertEquals("http://localhost:8080/home", page.url());
-
-        // Se selecciona boton de productos
-        page.click("#btn-stock");
-
-        // Se define la espera de redireccion
-        page.waitForURL("http://localhost:8080/stock");
-
-        // Se prueba que se haya completado la redireccion al validar la URL
-        assertEquals("http://localhost:8080/stock", page.url());
-
-        page.click("#tableProductStock tbody tr:first-child #btnStockMinus");
+        page.click("#tableProductRestock tbody tr:first-child #btnRestock");
 
         // Se identifica el modal para agregar el producto
         page.waitForSelector("#manageStockModal");
