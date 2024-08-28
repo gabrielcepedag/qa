@@ -26,15 +26,23 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.flywaydb:flyway-core'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.flywaydb:flyway-core'
     compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-//    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.modelmapper:modelmapper:2.3.5'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    annotationProcessor 'org.projectlombok:lombok'
+//    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    // TESTING
+    implementation 'com.microsoft.playwright:playwright:1.44.0'
+    testImplementation 'io.cucumber:cucumber-java:7.18.0'
+    testImplementation 'io.cucumber:cucumber-junit:7.18.0'
+    testImplementation 'io.cucumber:cucumber-spring:7.16.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     // MYSQL
     implementation 'mysql:mysql-connector-java:8.0.33'
     // H2

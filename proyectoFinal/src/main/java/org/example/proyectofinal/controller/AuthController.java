@@ -35,7 +35,6 @@ public class AuthController {
 
     @PostMapping("/api/v1/auth")
     public ResponseEntity<ApiResponse> AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO){
-        System.out.println("Entre al controller...");
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
 
         if(authentication.isAuthenticated()){

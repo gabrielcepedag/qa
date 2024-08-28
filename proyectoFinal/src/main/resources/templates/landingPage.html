@@ -23,6 +23,12 @@
 </head>
 
 <body class="index-page">
+<script>
+    const jwt = localStorage.getItem('jwtToken');
+    if (jwt) {
+        window.location.href = '/home';
+    }
+</script>
 
 <header id="header" class="header sticky-top">
 

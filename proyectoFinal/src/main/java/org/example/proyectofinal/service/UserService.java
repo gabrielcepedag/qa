@@ -6,6 +6,7 @@ import org.example.proyectofinal.entity.Product;
 import org.example.proyectofinal.entity.User;
 import org.example.proyectofinal.exception.BadRequestException;
 import org.example.proyectofinal.exception.ResourceNotFoundException;
+import org.example.proyectofinal.exception.UnauthorizedException;
 import org.example.proyectofinal.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

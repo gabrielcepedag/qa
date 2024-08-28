@@ -11,13 +11,24 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-html5-3.0.1/b-print-3.0.1/date-1.5.2/r-3.0.1/datatables.min.css">
     <link rel="stylesheet" href="/css/mainStyle.css">
 </head>
+
 <body>
+<script>
+    const jwt = localStorage.getItem('jwtToken');
+    const role = localStorage.getItem('role');
+    if (!jwt) {
+        window.location.href = '/';
+    }
+    if (role !== 'ADMIN') {
+        window.location.href = '/home';
+    }
+</script>
 
 <div class="container-fluid">
 
     <div class="row flex-nowrap">
         <!-- Sidebar Section -->
-        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark sidebar-container">
             <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                 <a href="/" class="d-flex align-items-center pb-3 mb-md-0 mt-md-3 me-md-auto text-white text-decoration-none">
                     <span class="fs-5 d-none d-sm-inline">
@@ -36,27 +47,29 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                            <i class="fs-4 bi-boxes"></i> <span class="ms-1 d-none d-sm-inline">Stock</span> </a>
+                        <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white stock-dropdown">
+                            <i class="fs-4 bi-boxes"></i> <span class="ms-1 d-none d-sm-inline">Manage Stock</span> </a>
                         <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                             <li class="w-100">
-                                <a href="#" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Manage Stock</span></a>
+                                <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Your Stock</span></a>
                             </li>
-                            <li>
-                                <a href="#" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
+                            <li class="w-100" id="manageRestockOption" style="display: none">
+                                <a href="/stock/restock" class="nav-link px-0 text-white" id="menuRestockBtn"> <span class="d-none d-sm-inline">Restock Orders</span></a>
+                            </li>
+                            <li class="w-100" id="manageHistoryOption" style="display: none">
+                                <a href="/stock/history" class="nav-link px-0 text-white" id="menuMovementsBtn"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="manageUsersOption" style="display: none">
                         <a href="#" class="nav-link px-0 align-middle">
                             <i class="fs-4 bi-people-fill"></i> <span class="ms-1 d-none d-sm-inline">Manage Users</span></a>
                     </li>
                 </ul>
-                <hr>
-                <div class="dropdown pb-4">
+                <div class="dropdown mb-2">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="/images/defaultUserIcon.png" alt="User Icon" width="30" height="30" class="rounded-circle">
-                        <span class="d-none d-sm-inline mx-1">eemr0001</span>
+                        <span class="d-none d-sm-inline mx-1" id="usernameDisplay">More</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
@@ -73,15 +86,15 @@
         <!-- End of Sidebar Section -->
 
         <!-- Page Content Section -->
-        <div class="col py-3">
+        <div class="col" style="margin-left:18rem">
             <!--  Header  -->
-            <section class="px-5 py-2 py-xxl-10 hcf-bp-center hcf-bs-cover hcf-overlay hcf-transform">
+            <section class="px-5 py-xxl-10 hcf-bp-center hcf-bs-cover hcf-overlay hcf-transform">
                 <div class="container">
                     <div class="row justify-content-md-space-between align-items-center">
                         <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center" style="width: 100% !important">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="display-5 fw-bold mb-3">Manage Users</h4>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <h4 class="display-5 fw-bold">Manage Users</h4>
+                                <button type="button" class="btn btn-success" id="btn-add-user" data-bs-toggle="modal" data-bs-target="#addUserModal" style="display:none">
                                     <i class="bi bi-plus-circle"></i> Add User
                                 </button>
                             </div>
@@ -113,14 +126,15 @@
                                         <td th:text="${user.id}"></td>
                                         <td th:text="${user.username}"></td>
                                         <td th:text="${user.name}"></td>
-                                        <td th:text="${#strings.capitalize(user.role.getValue().split('_')[1].toLowerCase())}"></td>
+                                        <td th:text="${#strings.capitalize(user.role.getValue().toLowerCase())}"></td>
                                         <td>
-                                            <a href="#" id="btnEdit" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue().split('_')[1]}" class="text-info edit-btn">
+                                            <a href="#" id="btnEdit" class="text-info edit-btn" th:attr="data-id=${user.id},data-username=${user.username},data-name=${user.name},data-password=${user.password},data-role=${user.role.getValue()}" style="display:none">
                                                 <i class="fs-5 bi bi-pencil-square" title="Edit Information"></i>
                                             </a>
-                                            <a href="#" id="btnDelete" th:attr="data-id=${user.id}" class="text-danger delete-btn ms-3">
+                                            <a href="#" id="btnDelete" th:attr="data-id=${user.id}" class="text-danger delete-btn ms-3" style="display:none">
                                                 <i class="fs-5 bi bi-trash" title="Delete User"></i>
                                             </a>
+                                            <p id="txtNoActions" style="display:none">No Actions</p>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -149,7 +163,7 @@
                             <label for="username"><b>Username</b></label>
                             <input class="form-control" type="text" id="username" name="username" placeholder="Write the username here" required>
                             <div class="valid-feedback">This username is valid!</div>
-                            <div class="invalid-feedback">This field cannot be blank!</div>
+                            <div class="invalid-feedback">This field cannot be empty!</div>
                         </div>
                         <div class="form-body mb-3">
                             <label for="name"><b>Full Name</b></label>
@@ -176,7 +190,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancel">
+                        <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancel" id="btnCancel">
                         <input type="submit" class="btn btn-success" value="Add" id="btnSubmit">
                     </div>
                 </form>
@@ -239,9 +253,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-html5-3.0.1/b-print-3.0.1/date-1.5.2/r-3.0.1/datatables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="/js/initDataTables.js"></script>
+<!--<script src="/js/initDataTables.js"></script>-->
+<script src="/js/mainScript.js"></script>
 
 <script>
+    const token = localStorage.getItem('jwtToken');
+
     // Form Validation
     (function () {
         'use strict'
@@ -268,6 +285,106 @@
     })();
 
     $(document).ready(function() {
+        const storedUsername = localStorage.getItem('username');
+        const role = localStorage.getItem('role');
+
+        if (storedUsername) {
+            $('#usernameDisplay').text(storedUsername);
+        }
+        if (role){
+            if (role === 'ADMIN') {
+                $('#manageUsersOption').show();
+                $('#btn-add-user').show();
+                $('#manageHistoryOption').show();
+                $('#manageRestockOption').show();
+            } else {
+                if (role === 'EMPLOYEE'){
+                    $('#manageHistoryOption').show();
+                    $('#manageRestockOption').show();
+                }
+                $('#manageUsersOption').hide();
+                $('#btn-add-user').hide();
+            }
+        }
+
+        var tableUsers = $('#tableUsers').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [
+                        {
+                            extend: 'excel',
+                            text: '<i class="fas fa-file-excel"></i>',
+                            className: 'btn-sm btn-success px-4'
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<i class="fas fa-file-pdf"></i>',
+                            className: 'btn-sm btn-danger px-4'
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="fas fa-print"></i>',
+                            className: 'btn-sm btn-secondary px-4'
+                        }
+                    ]
+                }
+            },
+            pageLength: 10,
+            lengthMenu: [5, 10, 15, 25, 50],
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ users",
+                info: "Showing _END_ from _TOTAL_ users",
+                infoEmpty: "No users registered",
+                infoFiltered: "(filtered from _MAX_ total users)",
+                zeroRecords: "No matching users found",
+                emptyTable: "No users registered",
+                responsive: true,
+                paginate: {
+                    first: "&#8676;",
+                    previous: "&#8592;",
+                    next: "&#8594;",
+                    last: "&#8677;"
+                }
+            },
+            drawCallback: function(settings) {
+                $('#tableUsers tbody tr').each(function() {
+                    if (role === 'USER') {
+                        $(this).find('#btnEdit, #btnDelete').hide();
+                        $(this).find('#txtNoActions').show();
+                    } else {
+                        $(this).find('#btnEdit, #btnDelete').show();
+                        $(this).find('#txtNoActions').hide();
+                    }
+                });
+            }
+        });
+
+        initializeEventListeners();
+        tableUsers.on('draw', function() {
+            initializeEventListeners();
+        });
+
+        $('#logoutBtn').click(function() {
+            event.preventDefault()
+            Swal.fire({
+                title: "Log Out Confirmation",
+                text: "Are you sure you want to sign out?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#505050',
+                confirmButtonText: 'Yes, sign out'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    loadLandingPage();
+                }
+            });
+        });
+    });
+
+    // Initialize button event listeners
+    function initializeEventListeners() {
         const editButtons = document.querySelectorAll('.edit-btn');
         const deleteButtons = document.querySelectorAll('.delete-btn');
 
@@ -291,7 +408,7 @@
         });
 
         deleteButtons.forEach(btn => {
-            btn.addEventListener('click', function (event) {
+            btn.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent default link behavior
 
                 const userId = this.getAttribute('data-id');
@@ -311,24 +428,7 @@
                 });
             });
         });
-
-        $('#logoutBtn').click(function() {
-            event.preventDefault()
-            Swal.fire({
-                title: "Log Out Confirmation",
-                text: "Are you sure you want to sign out?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#505050',
-                confirmButtonText: 'Yes, sign out'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    loadLandingPage();
-                }
-            });
-        });
-    });
+    }
 
     // Function to create an User
     function submitFormAdd() {
@@ -350,6 +450,9 @@
         $.ajax({
             url: submitUrl,
             type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
             contentType: 'application/json',
             data: JSON.stringify(user),
             success: function() {
@@ -386,6 +489,9 @@
         $.ajax({
             url: submitUrl,
             type: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
             contentType: 'application/json',
             data: JSON.stringify(user),
             success: function () {
@@ -409,6 +515,9 @@
         $.ajax({
             url: deleteUrl,
             type: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
             success: function () {
                 Swal.fire('User Removal Completed!', 'The user has been deleted succesfully.', 'success', 'OK')
                     .then((result) => {
@@ -422,22 +531,6 @@
             }
         });
     }
-
-    // Function to load landing page after successful logout
-    function loadLandingPage() {
-        $.ajax({
-            url: "/",
-            type: 'GET',
-            success: function() {
-                window.location.href = "/";
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching Home page data:', error);
-                Swal.fire('Error', 'Failed to load home page data. Please try again.', 'error');
-            }
-        });
-    }
-
 </script>
 
 </body>

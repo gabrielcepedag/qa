@@ -14,8 +14,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,11 +26,13 @@ public class RestockController {
     private final RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
     private CustResponseBuilder custResponseBuilder;
+    private final ProductService productService;
 
-    public RestockController(RestockOrderService restockOrderService, ModelMapper modelMapper, CustResponseBuilder custResponseBuilder) {
+    public RestockController(RestockOrderService restockOrderService, ModelMapper modelMapper, CustResponseBuilder custResponseBuilder, ProductService productService) {
         this.restockOrderService = restockOrderService;
         this.modelMapper = modelMapper;
         this.custResponseBuilder = custResponseBuilder;
+        this.productService = productService;
     }
 
     @GetMapping("api/v1/restock")
@@ -47,5 +51,32 @@ public class RestockController {
         ResponseEntity<ApiResponse> response = custResponseBuilder.buildResponse(HttpStatus.OK.value(), restockOrderResponse);
 
         return response;
+    }
+
+    //=================== VIEWS ==========================
+    @GetMapping("/stock")
+    public String manageStockPage(Model model){
+        List<Product> products = productService.findAllProducts();
+        model.addAttribute("productList", products);
+
+        return "manageStock";
+    }
+
+    @GetMapping("/stock/restock")
+    public String manageRestockPage(Model model){
+        List<RestockOrder> restockOrders = restockOrderService.findAllRestock(true);
+
+        model.addAttribute("restockOrdersList", restockOrders);
+
+        return "manageRestockOrders";
+    }
+
+    @GetMapping("/stock/history")
+    public String manageInventoryMovementsPage(Model model){
+        List<Object> movementsList = new ArrayList<>();
+
+        model.addAttribute("movementsList", movementsList);
+
+        return "manageMovements";
     }
 }
