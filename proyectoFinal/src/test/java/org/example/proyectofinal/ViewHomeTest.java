@@ -29,8 +29,8 @@ public class ViewHomeTest {
         page.waitForSelector("#password");
 
         // Se ingresa credenciales validas en los campos
-        page.fill("#username", "playwrightLoginTest1");
-        page.fill("#password", "12345");
+        page.fill("#username", "admin");
+        page.fill("#password", "admin");
 
         // Se selecciona boton de login
         page.click("#loginBtn");
