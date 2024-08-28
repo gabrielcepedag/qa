@@ -1,7 +1,7 @@
 services:
   inventory:
-#    image: gcepedag/proyecto-final:latest
-    build: .
+    image: gcepedag/proyecto-final:0.0.1
+#    build: .
     networks:
       - my-network
     ports:
@@ -11,6 +11,7 @@ services:
     depends_on:
       - database-mysql
     restart: always
+
   database-mysql:
     platform: linux/amd64
     image: mysql:5.7.26
@@ -31,5 +32,21 @@ services:
 #      - ${VOLUME_PATH}:/var/lib/mysql
     networks:
       - my-network
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:9.5.2
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
 networks:
   my-network:
