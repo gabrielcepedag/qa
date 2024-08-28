@@ -7,6 +7,7 @@ import org.example.proyectofinal.entity.Product;
 import org.example.proyectofinal.exception.BadRequestException;
 import org.example.proyectofinal.exception.ResourceNotFoundException;
 import org.example.proyectofinal.repository.ProductRepository;
+import org.example.proyectofinal.service.ProductHistoryService;
 import org.example.proyectofinal.service.ProductService;
 import org.example.proyectofinal.service.RestockOrderService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,13 +22,12 @@ import java.util.List;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 
-//TODO: Hacer test para los roles
-
 @DataJpaTest
 public class ProductTest {
     private ProductService productService;
     @Autowired
     private ProductRepository productRepository;
+    private ProductHistoryService productHistoryService;
     private RestockOrderService restockOrderService;
     private ModelMapper modelMapper;
     private ProductRequest productRequest;
@@ -37,7 +37,7 @@ public class ProductTest {
     @BeforeEach
     void setUp() {
         modelMapper = new ModelMapper();
-        productService = new ProductService(modelMapper, productRepository, restockOrderService);
+        productService = new ProductService(productRepository, restockOrderService, modelMapper, productHistoryService);
 
         productRequest = ProductRequest
                 .builder()
