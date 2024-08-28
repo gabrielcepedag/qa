@@ -22,7 +22,7 @@ public class ProductHistoryService {
 
     public List<ProductHistory> getAllProductHistory() {
         try {
-            return productHistoryRepository.findAllOrderByDate();
+            return productHistoryRepository.findAll();
         }catch (Exception e){
             throw new BadRequestException(e.getMessage());
         }
@@ -46,7 +46,7 @@ public class ProductHistoryService {
                 .productName(product.getName())
                 .productDescription(product.getDescription())
                 .quantityBefore(product.getQuantity())
-                .quantityAfter(quantity)
+                .quantityAfter(product.getQuantity())
                 .userId(user.getId())
                 .userName(user.getName())
                 .userUsername(user.getUsername())

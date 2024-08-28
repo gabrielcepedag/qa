@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface ProductHistoryRepository extends JpaRepository<ProductHistory, Long> {
     List<ProductHistory> findAllByProductId(Long productId);
-    List<ProductHistory> findAllOrderByDate();
+
 }
