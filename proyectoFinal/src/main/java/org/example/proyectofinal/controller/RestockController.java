@@ -70,13 +70,4 @@ public class RestockController {
 
         return "manageRestockOrders";
     }
-
-    @GetMapping("/stock/history")
-    public String manageInventoryMovementsPage(Model model){
-        List<Object> movementsList = new ArrayList<>();
-
-        model.addAttribute("movementsList", movementsList);
-
-        return "manageMovements";
-    }
 }

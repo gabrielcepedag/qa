@@ -126,7 +126,7 @@
                                         <td th:text="${#numbers.formatDecimal(product.price, 2, 'COMMA', 2, 'POINT')}"></td>
                                         <td th:text="${product.quantity}"></td>
                                         <td>
-                                            <a href="#" id="btnEdit" th:attr="data-id=${product.id},data-stock=${product.quantity},data-name=${product.name},data-description=${product.description},data-category=${product.category.getValue()},data-price=${product.price},data-quantity=${product.quantity}" class="text-info edit-btn" style="display:none">
+                                            <a href="#" id="btnEdit" th:attr="data-id=${product.id},data-stock=${product.quantity},data-name=${product.name},data-description=${product.description},data-category=${product.category.getValue()},data-price=${product.price},data-quantity=${product.quantity}, data-minQuantity=${product.minQuantity}" class="text-info edit-btn" style="display:none">
                                                 <i class="fs-5 bi bi-pencil-square" title="Edit Information"></i>
                                             </a>
                                             <a href="#" id="btnDelete" th:attr="data-id=${product.id}" class="text-danger delete-btn ms-3" style="display:none">
@@ -186,6 +186,12 @@
                             <div class="valid-feedback">Category is valid!</div>
                             <div class="invalid-feedback">Please select a category!</div>
                         </div>
+                        <div class="form-body mb-3">
+                            <label for="minQuantity"><b>Minimum Quantity on Hand</b></label>
+                            <input class="form-control" type="number" id="minQuantity" name="minQuantity" placeholder="Enter the minimun stock amount" min="0" step="1" required>
+                            <div class="valid-feedback">This minimum amount is valid!</div>
+                            <div class="invalid-feedback">This field is empty or invalid!</div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancel" id="btnCancel">
@@ -237,6 +243,12 @@
                             </select>
                             <div class="valid-feedback">Category is valid!</div>
                             <div class="invalid-feedback">Please select a category!</div>
+                        </div>
+                        <div class="form-body mb-3">
+                            <label for="editMinQuantity"><b>Product List Price</b></label>
+                            <input class="form-control" type="number" id="editMinQuantity" name="minQuantity" placeholder="Enter the minimun stock amount" min="0" step="1" required>
+                            <div class="valid-feedback">This minimum amount is valid!</div>
+                            <div class="invalid-feedback">This field is empty or invalid!</div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -406,6 +418,7 @@
                 const productDescription = this.getAttribute('data-description');
                 const productCategory = this.getAttribute('data-category');
                 const productPrice = this.getAttribute('data-price');
+                const productMinQuantity = this.getAttribute('data-minQuantity');
 
                 document.getElementById('editProductId').value = productId;
                 document.getElementById('editProductCurrentStock').value = productStock;
@@ -413,6 +426,7 @@
                 document.getElementById('editDescription').value = productDescription;
                 document.getElementById('editCategory').value = productCategory;
                 document.getElementById('editPrice').value = productPrice;
+                document.getElementById('editMinQuantity').value = productMinQuantity;
 
                 const editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
                 editProductModal.show();
@@ -448,6 +462,8 @@
         const description = $('#description').val().trim();
         const price = $('#price').val().trim();
         const category = $('#category').val();
+        const minQuantity = $('#minQuantity').val();
+
         const submitUrl = "/api/v1/products";
         const submitBtn = $('#submitBtn');
         submitBtn.prop('disabled', true);
@@ -456,7 +472,8 @@
             description: description,
             price: price,
             quantity: 0,
-            category: category
+            category: category,
+            minQuantity: minQuantity
         };
         $.ajax({
             url: submitUrl,
@@ -487,6 +504,7 @@
         const description = $('#editDescription').val().trim();
         const price = $('#editPrice').val().trim();
         const category = $('#editCategory').val();
+        const minQuantity = $('#editMinQuantity').val();
         const submitUrl = "/api/v1/products/" + productId;
         const submitBtn = $('#btnSaveChanges');
         submitBtn.prop('disabled', true);
@@ -496,7 +514,8 @@
             description: description,
             price: price,
             quantity: productStock,
-            category: category
+            category: category,
+            minQuantity: minQuantity
         };
         $.ajax({
             url: submitUrl,

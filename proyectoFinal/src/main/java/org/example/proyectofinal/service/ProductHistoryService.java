@@ -45,7 +45,7 @@ public class ProductHistoryService {
                 .productId(product.getId())
                 .productName(product.getName())
                 .productDescription(product.getDescription())
-                .quantityBefore(product.getQuantity())
+                .quantityBefore(product.getQuantity() - quantity)
                 .quantityAfter(product.getQuantity())
                 .userId(user.getId())
                 .userName(user.getName())

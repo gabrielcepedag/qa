@@ -68,11 +68,14 @@ public class ProductService {
 
     public Product updateProduct(Long id, ProductRequest productRequest) {
         Product product = findOneById(id);
-
         modelMapper.map(productRequest, product);
         product.setId(id);
         if (!productRequest.getQuantity().equals(product.getQuantity())){
-            productHistoryService.createHistory(product, productRequest.getQuantity());
+            int quantityBefore = product.getQuantity() - productRequest.getQuantity();
+            if(quantityBefore < 0){
+                quantityBefore *= -1;
+            }
+            productHistoryService.createHistory(product, quantityBefore);
         }
         return productRepository.save(product);
     }

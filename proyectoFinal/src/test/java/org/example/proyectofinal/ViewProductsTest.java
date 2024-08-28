@@ -112,6 +112,7 @@ public class ViewProductsTest {
         page.fill("#description", "This is a test product created from Playwright.");
         page.fill("#price", "100.00");
         page.selectOption("#category", "FOOD");
+        page.fill("#minQuantity", "15");
 
         // Se selecciona el botón de confirmar registro
         page.click("#btnSubmit");
@@ -195,18 +196,21 @@ public class ViewProductsTest {
         Locator descriptionlInvalidFeedback = page.locator("#description ~ .invalid-feedback");
         Locator priceInvalidFeedback = page.locator("#price ~ .invalid-feedback");
         Locator categoryInvalidFeedback = page.locator("#category ~ .invalid-feedback");
+        Locator minStockInvalidFeedback = page.locator("#minQuantity ~ .invalid-feedback");
 
         // Se valida que los mensajes de entrada invalida son desplegados
         assertTrue(nameInvalidFeedback.isVisible());
         assertTrue(descriptionlInvalidFeedback.isVisible());
         assertTrue(priceInvalidFeedback.isVisible());
         assertTrue(categoryInvalidFeedback.isVisible());
+        assertTrue(minStockInvalidFeedback.isVisible());
 
         // Se valida el contenido de los mensajes invalidos
         assertEquals("This field cannot be empty!", nameInvalidFeedback.innerText());
         assertEquals("This field cannot be empty!", descriptionlInvalidFeedback.innerText());
         assertEquals("This field is empty or invalid!", priceInvalidFeedback.innerText());
         assertEquals("Please select a category!", categoryInvalidFeedback.innerText());
+        assertEquals("This field is empty or invalid!", minStockInvalidFeedback.innerText());
 
         page.close();
     }
