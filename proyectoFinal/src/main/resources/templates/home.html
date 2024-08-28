@@ -48,15 +48,15 @@
                             <li class="w-100">
                                 <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Your Stock</span></a>
                             </li>
-                            <li class="w-100">
+                            <li class="w-100" id="manageRestockOption" style="display: none">
                                 <a href="/stock/restock" class="nav-link px-0 text-white" id="menuRestockBtn"> <span class="d-none d-sm-inline">Restock Orders</span></a>
                             </li>
-                            <li class="w-100">
+                            <li class="w-100" id="manageHistoryOption" style="display: none">
                                 <a href="/stock/history" class="nav-link px-0 text-white" id="menuMovementsBtn"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="manageUsersOption" style="display: none">
                         <a href="/users" class="nav-link px-0 align-middle text-white">
                             <i class="fs-4 bi-people-fill"></i> <span class="ms-1 d-none d-sm-inline">Manage Users</span></a>
                     </li>
@@ -87,12 +87,12 @@
                 <div class="container">
                     <div class="row justify-content-md-center">
                         <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center text-white">
-                            <h1 class="display-3 fw-bold mb-3">Welcome to your StockEasy Hub</h1>
-                            <p class="lead mb-5">Access all our features with ease from this central hub.</p>
+                            <h1 class="display-3 fw-bold mb-3" style="text-shadow: 1px 1px 2px black;">Welcome to your StockEasy Hub</h1>
+                            <p class="lead mb-5" style="text-shadow: 1px 1px 2px black;">Access all our features with ease from this central hub.</p>
                             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                                 <button type="button" id="btn-products" class="btn btn-outline-light btn-lg px-4 gap-3" onclick="redirectToManageItems()">Manage Items</button>
                                 <button type="button" id="btn-stock" class="btn btn-outline-light btn-lg px-4 gap-3" onclick="redirectToManageStock()">Manage Stock</button>
-                                <button type="button" id="btn-users" class="btn btn-outline-light btn-lg px-4 gap-3" onclick="redirectToManageUsers()">Manage Users</button>
+                                <button type="button" id="btn-users" class="btn btn-outline-light btn-lg px-4 gap-3" onclick="redirectToManageUsers()" style="display: none">Manage Users</button>
                             </div>
                         </div>
                     </div>
@@ -114,8 +114,25 @@
 <script>
     $(document).ready(function() {
         const storedUsername = localStorage.getItem('username');
+        const role = localStorage.getItem('role');
+
         if (storedUsername) {
             $('#usernameDisplay').text(storedUsername);
+        }
+        if (role){
+            if (role === 'ADMIN') {
+                $('#manageUsersOption').show();
+                $('#manageHistoryOption').show();
+                $('#manageRestockOption').show();
+                $('#btn-users').show();
+            }else{
+                if (role === 'EMPLOYEE'){
+                    $('#manageHistoryOption').show();
+                    $('#manageRestockOption').show();
+                }
+                $('#manageUsersOption').hide();
+                $('#btn-users').hide();
+            }
         }
 
         $('#logoutBtn').click(function() {

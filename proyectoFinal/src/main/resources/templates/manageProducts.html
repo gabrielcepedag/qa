@@ -47,15 +47,15 @@
                             <li class="w-100">
                                 <a href="/stock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Your Stock</span></a>
                             </li>
-                            <li class="w-100">
-                                <a href="/stock/restock" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Restock Orders</span></a>
+                            <li class="w-100" id="manageRestockOption" style="display: none">
+                                <a href="/stock/restock" class="nav-link px-0 text-white" id="menuRestockBtn"> <span class="d-none d-sm-inline">Restock Orders</span></a>
                             </li>
-                            <li class="w-100">
-                                <a href="/stock/history" class="nav-link px-0 text-white"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
+                            <li class="w-100" id="manageHistoryOption" style="display: none">
+                                <a href="/stock/history" class="nav-link px-0 text-white" id="menuMovementsBtn"> <span class="d-none d-sm-inline">Inventory Movements</span></a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="manageUsersOption" style="display: none">
                         <a href="/users" class="nav-link px-0 align-middle text-white">
                             <i class="fs-4 bi-people-fill"></i> <span class="ms-1 d-none d-sm-inline">Manage Users</span></a>
                     </li>
@@ -291,6 +291,29 @@
     $(document).ready(function() {
         const storedUsername = localStorage.getItem('username');
         const role = localStorage.getItem('role');
+
+        if (storedUsername) {
+            $('#usernameDisplay').text(storedUsername);
+        }
+        if (role){
+            if (role === 'ADMIN') {
+                $('#manageUsersOption').show();
+                $('#btn-add-product').show();
+                $('#manageHistoryOption').show();
+                $('#manageRestockOption').show();
+            }else if(role === 'EMPLOYEE') {
+                $('#manageUsersOption').hide();
+                $('#btn-add-product').show();
+                $('#manageHistoryOption').show();
+                $('#manageRestockOption').show();
+            } else {
+                $('#btn-add-product').hide();
+                $('#manageUsersOption').hide();
+                $('#manageHistoryOption').hide();
+                $('#manageRestockOption').hide();
+            }
+        }
+
         var tableProducts = $('#tableProducts').DataTable({
             layout: {
                 topStart: {
@@ -337,23 +360,15 @@
                         $(this).find('#btnEdit, #btnDelete').hide();
                         $(this).find('#txtNoActions').show();
                     } else {
-                        $(this).find('#btnEdit, #btnDelete').show();
+                        if(role === 'ADMIN'){
+                            $(this).find('#btnDelete').show();
+                        }
+                        $(this).find('#btnEdit').show();
                         $(this).find('#txtNoActions').hide();
                     }
                 });
             }
         });
-
-        if (storedUsername) {
-            $('#usernameDisplay').text(storedUsername);
-        }
-        if (role){
-            if (role !== 'USER') {
-                $('#btn-add-product').show();
-            }else{
-                $('#btn-add-product').hide();
-            }
-        }
 
         initializeEventListeners();
         tableProducts.on('draw', function() {
