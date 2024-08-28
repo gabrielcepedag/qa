@@ -15,8 +15,12 @@
 <body>
 <script>
     const jwt = localStorage.getItem('jwtToken');
+    const role = localStorage.getItem('role');
     if (!jwt) {
         window.location.href = '/';
+    }
+    if (role !== 'ADMIN') {
+        window.location.href = '/home';
     }
 </script>
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,10 +73,9 @@ public class RestockController {
 
     @GetMapping("/stock/history")
     public String manageInventoryMovementsPage(Model model){
-        List<RestockOrder> restockOrders = restockOrderService.findAllRestock(null);
-//        System.out.println(restockOrders.toString());
+        List<Object> movementsList = new ArrayList<>();
 
-        model.addAttribute("restockOrdersList", restockOrders);
+        model.addAttribute("movementsList", movementsList);
 
         return "manageMovements";
     }
