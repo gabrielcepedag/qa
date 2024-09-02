@@ -1,6 +1,6 @@
 services:
   inventory:
-    image: gcepedag/proyecto-final:0.0.1
+    image: gcepedag/proyecto-final:0.0.2
 #    build: .
     networks:
       - my-network
@@ -39,6 +39,8 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - inventory
 
   grafana:
     image: grafana/grafana:9.5.2
@@ -48,5 +50,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
+    depends_on:
+      - inventory
 networks:
   my-network:
